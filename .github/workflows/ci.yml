@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  domain:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: services/domain/pyproject.toml
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e "services/domain[dev]"
+
+      - name: Validate JSON contracts
+        run: |
+          python - <<'PY'
+          import glob
+          import json
+          for path in glob.glob("packages/contracts/*.json"):
+              with open(path, encoding="utf-8") as fh:
+                  json.load(fh)
+              print(f"ok {path}")
+          PY
+
+      - name: Test
+        run: pytest services/domain/tests -q
