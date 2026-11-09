@@ -1,6 +1,6 @@
 # M1/M2 工作台壳、模式切换与假设核准闭环
 
-放弃固定四栏，改为「左侧模式轨 + 单主画布 + 可折叠 Dock」：研究/行情/文件/报告/核准/看板六个模式通过左轨与快捷键切换，每个模式内部用可折叠面板组合；K线作为独立行情模式获得整屏宽度，研究模式只保留底部迷你K线。聊天默认左侧 Dock，检查器默认右侧 Dock，Focus 模式隐藏全部 Dock。
+放弃固定四栏，改为「左侧模式轨 + 单主画布 + 可折叠 Dock」。蓝图按 A/B/C/D 分层：A 只保留总览模块图与用例；B 承载工作台壳/模式/行情/报告的模块、数据流、时序与面板类型；C 承载核准队列、审批流与假设状态机；D 承载验收模块与实施计划。K 线是独立行情模式，研究模式只保留底部迷你 K 线。
 
 > 从当前会话蓝图导出。`m1-m2-workbench.json` 是可被 `blueprint(action="create")` 直接使用的 payload。
 
@@ -135,78 +135,55 @@
 | 图 | 层 | 节点 | 连线 |
 |---|---|---|---|
 | 工作台用例 | A:usecase | 11 | 12 |
-| 数据流 | A:dfd | 10 | 12 |
 | 模块依赖 | A:module | 18 | 33 |
-| 打开→预览→核准→快照 | A:sequence | 5 | 16 |
-| 工作区数据模型 | A:er | 7 | 4 |
-| C4 上下文/容器 | A:c4 | 10 | 10 |
-| 核心类型 | A:class | 9 | 8 |
-| 假设状态机 | A:state | 9 | 10 |
-| 实施计划 | A:flowchart | 25 | 36 |
+| B 层 UI 数据流 | B:dfd | 9 | 11 |
+| B 层模块依赖 | B:module | 13 | 19 |
+| 模式切换与研究流程 | B:sequence | 6 | 13 |
+| 面板与布局类型 | B:class | 6 | 4 |
+| C 层核准数据流 | C:dfd | 8 | 10 |
+| C 层核准模块 | C:module | 5 | 5 |
+| 核准闭环时序 | C:sequence | 5 | 11 |
+| 假设状态机 | C:state | 9 | 10 |
+| D 层验收模块 | D:module | 5 | 6 |
+| M1/M2 实施计划 | D:flowchart | 12 | 13 |
 
 ## 实施计划图
 
 ```mermaid
 flowchart TD
-  fc-start(["开始"])
-  fc-read["读取 M0 现状与约束"]
-  fc-scope["确认 M1/M2 范围与非目标"]
-  fc-d1{"DSH 插件能否承载模式轨 + 主画布 + Dock？"}
-  fc-plugin["实现 DSH 插件工作台壳"]
-  fc-fork["fork Web 端并保留插件边界"]
-  fc-layout["实现工作台壳：左轨 + 顶栏 + 可折叠 Dock + 专注模式"]
-  fc-tree["实现文件树懒加载 + 虚拟滚动"]
-  fc-preview["实现 report.json 预览器"]
-  fc-version["实现 Git 快照与回退条"]
-  fc-approval["实现审批队列"]
-  fc-audit["实现审计时间线"]
-  fc-verify["集成验收与性能基线"]
-  fc-d2{"验收是否通过？"}
-  fc-rollback["回滚到 v0.1.0-m0 并记录失败"]
-  fc-done(["完成 M1"])
-  fc-market["实现行情模式（全宽 K 线）"]
-  fc-router["实现模式路由与快捷键"]
-  fc-panel["实现面板注册与布局持久化"]
-  fc-research["实现研究模式"]
-  fc-report["实现报告模式"]
-  fc-approval-mode["实现核准模式"]
-  fc-start -->|启动| fc-read
-  fc-read -->|有基线| fc-scope
-  fc-scope -->|范围确认| fc-d1
-  fc-d1 -->|yes| fc-plugin
-  fc-d1 -->|no| fc-fork
-  fc-plugin -->|壳就绪| fc-layout
-  fc-fork -->|壳就绪| fc-layout
-  fc-layout -->|并行| fc-tree
-  fc-layout -->|并行| fc-preview
-  fc-layout -->|并行| fc-version
-  fc-layout -->|并行| fc-approval
-  fc-approval -->|队列就绪| fc-audit
-  fc-tree -->|可验收| fc-verify
-  fc-preview -->|可验收| fc-verify
-  fc-version -->|可验收| fc-verify
-  fc-audit -->|可验收| fc-verify
-  fc-verify -->|跑 e2e| fc-d2
-  fc-d2 -->|yes| fc-done
-  fc-d2 -->|no| fc-rollback
-  fc-rollback -->|修复后重跑| fc-verify
-  fc-layout -->|并行| fc-market
-  fc-market -->|可验收| fc-verify
-  fc-layout -->|壳就绪| fc-router
-  fc-layout -->|壳就绪| fc-panel
-  fc-router -->|并行| fc-research
-  fc-panel -->|并行| fc-research
-  fc-router -->|并行| fc-market
-  fc-panel -->|并行| fc-market
-  fc-router -->|并行| fc-report
-  fc-panel -->|并行| fc-report
-  fc-router -->|并行| fc-approval-mode
-  fc-panel -->|并行| fc-approval-mode
-  fc-research -->|可验收| fc-verify
-  fc-market -->|可验收| fc-verify
-  fc-report -->|可验收| fc-verify
-  fc-approval-mode -->|可验收| fc-verify
+  dflow-start(["开始"])
+  dflow-read["读取 M0 与蓝图"]
+  dflow-scope["确认 M1/M2 范围"]
+  dflow-d1{"插件能承载工作台壳？"}
+  dflow-plugin["插件实现工作台壳"]
+  dflow-fork["fork Web 端并保留插件边界"]
+  dflow-shell["实现壳/模式路由/面板注册"]
+  dflow-modes["实现研究/行情/报告/核准模式"]
+  dflow-verify["e2e 与性能基线"]
+  dflow-d2{"验收通过？"}
+  dflow-rollback["回滚 v0.1.0-m0 并记录"]
+  dflow-done(["完成 M1/M2"])
+  dflow-start -->|启动| dflow-read
+  dflow-read -->|有基线| dflow-scope
+  dflow-scope -->|范围确认| dflow-d1
+  dflow-d1 -->|yes| dflow-plugin
+  dflow-d1 -->|no| dflow-fork
+  dflow-plugin -->|壳就绪| dflow-shell
+  dflow-fork -->|壳就绪| dflow-shell
+  dflow-shell -->|并行| dflow-modes
+  dflow-modes -->|可验收| dflow-verify
+  dflow-verify -->|跑 e2e| dflow-d2
+  dflow-d2 -->|yes| dflow-done
+  dflow-d2 -->|no| dflow-rollback
+  dflow-rollback -->|修复后重跑| dflow-verify
 ```
+
+## 分层说明
+
+- **A 总览**：只保留「工作台用例」与「模块依赖」总览，不再放具体 DFD/时序/状态机。
+- **B 工作台壳与模式**：模块依赖、UI 数据流、模式切换时序、面板/布局类图。
+- **C 核准模式**：核准模块、核准数据流、核准闭环时序、假设状态机。
+- **D 验证与交付**：验收模块、M1/M2 实施计划。
 
 ## 推进顺序
 

@@ -21,9 +21,9 @@
 |---|---|
 | 仓库 | `XiRuize/fin-agent-workbench`，public |
 | 默认分支 | `main` |
-| 最新提交 | `bc6a46e feat(m0): add architecture, contracts and hypothesis domain API` |
-| 版本 tag | `v0.1.0-m0` |
-| CI | 通过：<https://github.com/XiRuize/fin-agent-workbench/actions/runs/42573739006> |
+| 最新提交 | `main` HEAD（本文件随蓝图分层提交） |
+| 版本 tag | `v0.1.0-m0`、`v0.2.0-design`、`v0.3.0-blueprint` |
+| CI | 通过：<https://github.com/XiRuize/fin-agent-workbench/actions> |
 | 领域服务测试 | `pytest services/domain/tests -q` → 7 passed |
 | 本地克隆 | `<workspace>/fin-agent-workbench`（已在本机 clone） |
 
@@ -132,7 +132,7 @@ fin-agent-workbench
 - 标题：**M1/M2 工作台壳、模式切换与假设核准闭环**
 - 7 个需求栏目：目标 7、功能 15、非功能 8、约束 10、验收 8、风险 8、角色 5。
 - 4 层：A 总览、B 工作台壳与模式（M1）、C 核准模式（M2）、D 验证与交付。
-- 9 张图：用例、数据流、模块依赖、时序、ER、C4、类图、状态机、实施计划。
+- **12 张图**：A 只保留用例与总览模块图；B 有模块图/DFD/时序/类图；C 有模块图/DFD/时序/状态机；D 有验收模块图/实施计划。
 - **16 个模块**，依赖顺序：
 
 ```text
