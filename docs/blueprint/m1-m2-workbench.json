@@ -1104,54 +1104,90 @@
           "id": "bdfd-user",
           "type": "entity",
           "label": "分析师/审批人",
+          "x": 70,
+          "y": 100,
+          "w": 158,
+          "h": 72,
           "requirementIds": []
         },
         {
           "id": "bdfd-shell",
           "type": "process",
           "label": "Workbench Shell",
+          "x": 380,
+          "y": 100,
+          "w": 168,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "bdfd-router",
           "type": "process",
           "label": "Mode Router",
+          "x": 380,
+          "y": 240,
+          "w": 168,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "bdfd-panels",
           "type": "process",
           "label": "Panel Registry",
+          "x": 380,
+          "y": 380,
+          "w": 168,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "bdfd-mode",
           "type": "process",
           "label": "Mode Module",
+          "x": 380,
+          "y": 520,
+          "w": 168,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "bdfd-domain",
           "type": "process",
           "label": "Domain API",
+          "x": 380,
+          "y": 660,
+          "w": 168,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "bdfd-dsh",
           "type": "process",
           "label": "DSH",
+          "x": 380,
+          "y": 800,
+          "w": 168,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "bdfd-layout",
           "type": "store",
           "label": "Layout Store",
+          "x": 720,
+          "y": 100,
+          "w": 164,
+          "h": 62,
           "requirementIds": []
         },
         {
           "id": "bdfd-workspace",
           "type": "store",
           "label": "Workspace",
+          "x": 720,
+          "y": 240,
+          "w": 164,
+          "h": 62,
           "requirementIds": []
         }
       ],
@@ -1234,78 +1270,134 @@
           "id": "bmod-b1",
           "type": "module",
           "label": "B1 DSH 承载 spike",
+          "x": 370,
+          "y": 100,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "bmod-b2",
           "type": "module",
           "label": "B2 工作台壳",
+          "x": 650,
+          "y": 100,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "bmod-b7",
           "type": "module",
           "label": "B7 模式路由",
+          "x": 930,
+          "y": 100,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "bmod-b8",
           "type": "module",
           "label": "B8 面板注册",
+          "x": 930,
+          "y": 242,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "bmod-b3",
           "type": "module",
           "label": "B3 文件树",
+          "x": 930,
+          "y": 384,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "bmod-b4",
           "type": "module",
           "label": "B4 报告画布",
+          "x": 930,
+          "y": 526,
+          "w": 196,
+          "h": 86,
+          "moduleId": "preview",
           "requirementIds": []
         },
         {
           "id": "bmod-b5",
           "type": "module",
           "label": "B5 版本面板",
+          "x": 1210,
+          "y": 100,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "bmod-b6",
           "type": "module",
           "label": "B6 行情模式",
+          "x": 1210,
+          "y": 242,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "bmod-b9",
           "type": "module",
           "label": "B9 研究模式",
+          "x": 1210,
+          "y": 384,
+          "w": 196,
+          "h": 86,
+          "moduleId": "research-mode",
           "requirementIds": []
         },
         {
           "id": "bmod-b10",
           "type": "module",
           "label": "B10 报告模式",
+          "x": 1210,
+          "y": 526,
+          "w": 196,
+          "h": 86,
+          "moduleId": "report-mode",
           "requirementIds": []
         },
         {
           "id": "bmod-b11",
           "type": "module",
           "label": "B11 核准模式",
+          "x": 1210,
+          "y": 668,
+          "w": 196,
+          "h": 86,
+          "moduleId": "approval-mode",
           "requirementIds": []
         },
         {
           "id": "bmod-dsh",
           "type": "external",
           "label": "DSH 内核",
+          "x": 90,
+          "y": 100,
+          "w": 176,
+          "h": 72,
           "requirementIds": []
         },
         {
           "id": "bmod-market",
           "type": "external",
           "label": "行情源",
+          "x": 930,
+          "y": 612,
+          "w": 176,
+          "h": 72,
           "requirementIds": []
         }
       ],
@@ -1455,36 +1547,60 @@
           "id": "bseq-analyst",
           "type": "actor",
           "label": "分析师",
+          "x": 80,
+          "y": 64,
+          "w": 130,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "bseq-rail",
           "type": "participant",
           "label": "Mode Rail",
+          "x": 310,
+          "y": 64,
+          "w": 170,
+          "h": 52,
           "requirementIds": []
         },
         {
           "id": "bseq-shell",
           "type": "participant",
           "label": "Workbench Shell",
+          "x": 540,
+          "y": 64,
+          "w": 170,
+          "h": 52,
           "requirementIds": []
         },
         {
           "id": "bseq-mode",
           "type": "participant",
           "label": "Mode Module",
+          "x": 770,
+          "y": 64,
+          "w": 170,
+          "h": 52,
           "requirementIds": []
         },
         {
           "id": "bseq-domain",
           "type": "participant",
           "label": "Domain API",
+          "x": 1000,
+          "y": 64,
+          "w": 170,
+          "h": 52,
           "requirementIds": []
         },
         {
           "id": "bseq-dsh",
           "type": "participant",
           "label": "DSH",
+          "x": 1230,
+          "y": 64,
+          "w": 170,
+          "h": 52,
           "requirementIds": []
         }
       ],
@@ -1593,6 +1709,331 @@
           "kind": "async",
           "order": 13
         }
+      ],
+      "height": 988
+    },
+    {
+      "key": "B:er",
+      "layerId": "B",
+      "type": "er",
+      "title": "B 层工作区数据模型",
+      "nodes": [
+        {
+          "id": "ber-hypothesis",
+          "type": "entity",
+          "label": "hypothesis",
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "id",
+              "type": "text",
+              "key": true
+            },
+            {
+              "name": "thesis",
+              "type": "text"
+            },
+            {
+              "name": "status",
+              "type": "text"
+            },
+            {
+              "name": "artifact_version",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "id": "ber-evidence",
+          "type": "entity",
+          "label": "evidence",
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "id",
+              "type": "text",
+              "key": true
+            },
+            {
+              "name": "hypothesis_id",
+              "type": "text"
+            },
+            {
+              "name": "source_id",
+              "type": "text"
+            },
+            {
+              "name": "locator",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "id": "ber-artifact",
+          "type": "entity",
+          "label": "artifact",
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "id",
+              "type": "text",
+              "key": true
+            },
+            {
+              "name": "hypothesis_id",
+              "type": "text"
+            },
+            {
+              "name": "version",
+              "type": "int"
+            },
+            {
+              "name": "git_commit",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "id": "ber-file",
+          "type": "entity",
+          "label": "workspace_file",
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "path",
+              "type": "text",
+              "key": true
+            },
+            {
+              "name": "kind",
+              "type": "text"
+            },
+            {
+              "name": "hash",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "id": "ber-bar",
+          "type": "entity",
+          "label": "market_bar",
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "symbol",
+              "type": "text",
+              "key": true
+            },
+            {
+              "name": "timeframe",
+              "type": "text"
+            },
+            {
+              "name": "ts",
+              "type": "datetime"
+            },
+            {
+              "name": "open",
+              "type": "decimal"
+            },
+            {
+              "name": "high",
+              "type": "decimal"
+            },
+            {
+              "name": "low",
+              "type": "decimal"
+            },
+            {
+              "name": "close",
+              "type": "decimal"
+            },
+            {
+              "name": "volume",
+              "type": "bigint"
+            }
+          ]
+        },
+        {
+          "id": "ber-rel-evidence",
+          "type": "relationship",
+          "label": "拥有",
+          "requirementIds": []
+        },
+        {
+          "id": "ber-rel-artifact",
+          "type": "relationship",
+          "label": "冻结为",
+          "requirementIds": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "ber-hypothesis",
+          "to": "ber-rel-evidence",
+          "label": "1",
+          "cardinality": "1..*"
+        },
+        {
+          "id": "e2",
+          "from": "ber-rel-evidence",
+          "to": "ber-evidence",
+          "label": "N",
+          "cardinality": "1..*"
+        },
+        {
+          "id": "e3",
+          "from": "ber-hypothesis",
+          "to": "ber-rel-artifact",
+          "label": "1",
+          "cardinality": "1..*"
+        },
+        {
+          "id": "e4",
+          "from": "ber-rel-artifact",
+          "to": "ber-artifact",
+          "label": "N",
+          "cardinality": "1..*"
+        }
+      ]
+    },
+    {
+      "key": "B:c4",
+      "layerId": "B",
+      "type": "c4",
+      "title": "B 层 C4 上下文/容器",
+      "nodes": [
+        {
+          "id": "bc4-analyst",
+          "type": "person",
+          "label": "分析师",
+          "requirementIds": []
+        },
+        {
+          "id": "bc4-approver",
+          "type": "person",
+          "label": "审批人",
+          "requirementIds": []
+        },
+        {
+          "id": "bc4-workbench",
+          "type": "system",
+          "label": "Fin Agent Workbench",
+          "requirementIds": []
+        },
+        {
+          "id": "bc4-ui",
+          "type": "container",
+          "label": "Workbench UI",
+          "technology": "React 18 + TS + DSH Web Shell",
+          "requirementIds": []
+        },
+        {
+          "id": "bc4-domain",
+          "type": "container",
+          "label": "Domain API",
+          "technology": "FastAPI + Pydantic v2 + SQLite",
+          "requirementIds": []
+        },
+        {
+          "id": "bc4-dsh",
+          "type": "container",
+          "label": "DSH Kernel",
+          "technology": "DeepSeek Harness 0.2.x",
+          "requirementIds": []
+        },
+        {
+          "id": "bc4-market",
+          "type": "container",
+          "label": "Market Mode",
+          "technology": "ECharts + DuckDB-WASM",
+          "requirementIds": []
+        },
+        {
+          "id": "bc4-db",
+          "type": "database",
+          "label": "Hypothesis DB",
+          "technology": "SQLite → Postgres",
+          "requirementIds": []
+        },
+        {
+          "id": "bc4-git",
+          "type": "database",
+          "label": "Git Workspace",
+          "technology": "Git + object storage",
+          "requirementIds": []
+        },
+        {
+          "id": "bc4-data",
+          "type": "external",
+          "label": "Market Data / Filings",
+          "technology": "OpenBB / AKShare / EDGAR",
+          "requirementIds": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "bc4-analyst",
+          "to": "bc4-workbench",
+          "label": "使用"
+        },
+        {
+          "id": "e2",
+          "from": "bc4-approver",
+          "to": "bc4-workbench",
+          "label": "审批"
+        },
+        {
+          "id": "e3",
+          "from": "bc4-workbench",
+          "to": "bc4-ui",
+          "label": "包含"
+        },
+        {
+          "id": "e4",
+          "from": "bc4-ui",
+          "to": "bc4-domain",
+          "label": "REST"
+        },
+        {
+          "id": "e5",
+          "from": "bc4-ui",
+          "to": "bc4-dsh",
+          "label": "session"
+        },
+        {
+          "id": "e6",
+          "from": "bc4-domain",
+          "to": "bc4-db",
+          "label": "读写"
+        },
+        {
+          "id": "e7",
+          "from": "bc4-domain",
+          "to": "bc4-git",
+          "label": "快照"
+        },
+        {
+          "id": "e8",
+          "from": "bc4-dsh",
+          "to": "bc4-data",
+          "label": "取数"
+        },
+        {
+          "id": "e9",
+          "from": "bc4-workbench",
+          "to": "bc4-market",
+          "label": "包含"
+        },
+        {
+          "id": "e10",
+          "from": "bc4-market",
+          "to": "bc4-data",
+          "label": "查询快照"
+        }
       ]
     },
     {
@@ -1605,6 +2046,10 @@
           "id": "bcls-paneldef",
           "type": "class",
           "label": "PanelDef",
+          "x": 90,
+          "y": 110,
+          "w": 240,
+          "h": 185,
           "requirementIds": [],
           "fields": [
             {
@@ -1642,6 +2087,10 @@
           "id": "bcls-panelstate",
           "type": "class",
           "label": "PanelState",
+          "x": 400,
+          "y": 110,
+          "w": 240,
+          "h": 128,
           "requirementIds": [],
           "fields": [
             {
@@ -1666,6 +2115,10 @@
           "id": "bcls-layout",
           "type": "class",
           "label": "WorkbenchLayout",
+          "x": 710,
+          "y": 110,
+          "w": 240,
+          "h": 128,
           "requirementIds": [],
           "fields": [
             {
@@ -1691,6 +2144,10 @@
           "id": "bcls-modedef",
           "type": "class",
           "label": "ModeDef",
+          "x": 90,
+          "y": 355,
+          "w": 240,
+          "h": 109,
           "requirementIds": [],
           "fields": [
             {
@@ -1712,6 +2169,10 @@
           "id": "bcls-store",
           "type": "class",
           "label": "WorkbenchStore",
+          "x": 400,
+          "y": 355,
+          "w": 240,
+          "h": 128,
           "requirementIds": [],
           "fields": [
             {
@@ -1736,6 +2197,10 @@
           "id": "bcls-block",
           "type": "class",
           "label": "ReportBlock",
+          "x": 710,
+          "y": 355,
+          "w": 240,
+          "h": 109,
           "requirementIds": [],
           "fields": [
             {
@@ -1795,48 +2260,80 @@
           "id": "cdfd-approver",
           "type": "entity",
           "label": "审批人",
+          "x": 70,
+          "y": 100,
+          "w": 158,
+          "h": 72,
           "requirementIds": []
         },
         {
           "id": "cdfd-analyst",
           "type": "entity",
           "label": "分析师",
+          "x": 70,
+          "y": 240,
+          "w": 158,
+          "h": 72,
           "requirementIds": []
         },
         {
           "id": "cdfd-ui",
           "type": "process",
           "label": "核准模式",
+          "x": 380,
+          "y": 100,
+          "w": 168,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "cdfd-service",
           "type": "process",
           "label": "Approval Service",
+          "x": 380,
+          "y": 240,
+          "w": 168,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "cdfd-gate",
           "type": "process",
           "label": "EvalGate",
+          "x": 380,
+          "y": 380,
+          "w": 168,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "cdfd-db",
           "type": "store",
           "label": "Hypothesis DB",
+          "x": 720,
+          "y": 100,
+          "w": 164,
+          "h": 62,
           "requirementIds": []
         },
         {
           "id": "cdfd-evidence",
           "type": "store",
           "label": "Evidence Store",
+          "x": 720,
+          "y": 240,
+          "w": 164,
+          "h": 62,
           "requirementIds": []
         },
         {
           "id": "cdfd-git",
           "type": "store",
           "label": "Git",
+          "x": 720,
+          "y": 380,
+          "w": 164,
+          "h": 62,
           "requirementIds": []
         }
       ],
@@ -1913,30 +2410,51 @@
           "id": "cmod-c1",
           "type": "module",
           "label": "C1 核准队列",
+          "x": 90,
+          "y": 100,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "cmod-c2",
           "type": "module",
           "label": "C2 状态机/审计",
+          "x": 370,
+          "y": 100,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "cmod-b11",
           "type": "module",
           "label": "B11 核准模式",
+          "x": 650,
+          "y": 100,
+          "w": 196,
+          "h": 86,
+          "moduleId": "approval-mode",
           "requirementIds": []
         },
         {
           "id": "cmod-b7",
           "type": "module",
           "label": "B7 模式路由",
+          "x": 370,
+          "y": 242,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "cmod-b8",
           "type": "module",
           "label": "B8 面板注册",
+          "x": 370,
+          "y": 384,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         }
       ],
@@ -1988,30 +2506,50 @@
           "id": "cseq-analyst",
           "type": "actor",
           "label": "分析师",
+          "x": 80,
+          "y": 64,
+          "w": 130,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "cseq-approver",
           "type": "actor",
           "label": "审批人",
+          "x": 310,
+          "y": 64,
+          "w": 130,
+          "h": 84,
           "requirementIds": []
         },
         {
           "id": "cseq-ui",
           "type": "participant",
           "label": "Approval UI",
+          "x": 540,
+          "y": 64,
+          "w": 170,
+          "h": 52,
           "requirementIds": []
         },
         {
           "id": "cseq-domain",
           "type": "participant",
           "label": "Domain API",
+          "x": 770,
+          "y": 64,
+          "w": 170,
+          "h": 52,
           "requirementIds": []
         },
         {
           "id": "cseq-git",
           "type": "participant",
           "label": "Git",
+          "x": 1000,
+          "y": 64,
+          "w": 170,
+          "h": 52,
           "requirementIds": []
         }
       ],
@@ -2104,7 +2642,8 @@
           "kind": "sync",
           "order": 11
         }
-      ]
+      ],
+      "height": 876
     },
     {
       "key": "C:state",
@@ -2116,54 +2655,90 @@
           "id": "cstate-start",
           "type": "initial",
           "label": "开始",
+          "x": 90,
+          "y": 110,
+          "w": 34,
+          "h": 34,
           "requirementIds": []
         },
         {
           "id": "cstate-draft",
           "type": "state",
           "label": "draft",
+          "x": 90,
+          "y": 1742,
+          "w": 170,
+          "h": 64,
           "requirementIds": []
         },
         {
           "id": "cstate-submitted",
           "type": "state",
           "label": "submitted",
+          "x": 90,
+          "y": 1838,
+          "w": 170,
+          "h": 64,
           "requirementIds": []
         },
         {
           "id": "cstate-review",
           "type": "state",
           "label": "under_review",
+          "x": 90,
+          "y": 1934,
+          "w": 170,
+          "h": 64,
           "requirementIds": []
         },
         {
           "id": "cstate-approved",
           "type": "state",
           "label": "approved",
+          "x": 316,
+          "y": 1742,
+          "w": 170,
+          "h": 64,
           "requirementIds": []
         },
         {
           "id": "cstate-rejected",
           "type": "state",
           "label": "rejected",
+          "x": 90,
+          "y": 1646,
+          "w": 170,
+          "h": 64,
           "requirementIds": []
         },
         {
           "id": "cstate-conditional",
           "type": "state",
           "label": "conditional",
+          "x": 316,
+          "y": 1646,
+          "w": 170,
+          "h": 64,
           "requirementIds": []
         },
         {
           "id": "cstate-frozen",
           "type": "state",
           "label": "frozen",
+          "x": 316,
+          "y": 1838,
+          "w": 170,
+          "h": 64,
           "requirementIds": []
         },
         {
           "id": "cstate-end",
           "type": "final",
           "label": "结束",
+          "x": 90,
+          "y": 2030,
+          "w": 40,
+          "h": 40,
           "requirementIds": []
         }
       ],
@@ -2240,30 +2815,51 @@
           "id": "dmod-d1",
           "type": "module",
           "label": "D1 e2e 验收",
+          "x": 370,
+          "y": 100,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "dmod-d2",
           "type": "module",
           "label": "D2 CI/构建/文档",
+          "x": 650,
+          "y": 100,
+          "w": 196,
+          "h": 86,
+          "moduleId": "ci-build",
           "requirementIds": []
         },
         {
           "id": "dmod-b2",
           "type": "module",
           "label": "B2 工作台壳",
+          "x": 90,
+          "y": 100,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "dmod-b7",
           "type": "module",
           "label": "B7 模式路由",
+          "x": 90,
+          "y": 242,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         },
         {
           "id": "dmod-b8",
           "type": "module",
           "label": "B8 面板注册",
+          "x": 90,
+          "y": 384,
+          "w": 196,
+          "h": 86,
           "requirementIds": []
         }
       ],
@@ -2322,12 +2918,20 @@
           "id": "dflow-start",
           "type": "start",
           "label": "开始",
+          "x": 450,
+          "y": 90,
+          "w": 140,
+          "h": 48,
           "requirementIds": []
         },
         {
           "id": "dflow-read",
           "type": "process",
           "label": "读取 M0 与蓝图",
+          "x": 436,
+          "y": 226,
+          "w": 168,
+          "h": 84,
           "verification": "pytest 7/7 + CI 绿",
           "requirementIds": []
         },
@@ -2335,6 +2939,10 @@
           "id": "dflow-scope",
           "type": "process",
           "label": "确认 M1/M2 范围",
+          "x": 436,
+          "y": 398,
+          "w": 168,
+          "h": 84,
           "verification": "用户确认",
           "requirementIds": []
         },
@@ -2342,6 +2950,10 @@
           "id": "dflow-d1",
           "type": "decision",
           "label": "插件能承载工作台壳？",
+          "x": 430,
+          "y": 570,
+          "w": 180,
+          "h": 110,
           "condition": "模式轨/画布/Dock 可挂载，命令与事件可用",
           "requirementIds": []
         },
@@ -2349,6 +2961,10 @@
           "id": "dflow-plugin",
           "type": "process",
           "label": "插件实现工作台壳",
+          "x": 606,
+          "y": 768,
+          "w": 168,
+          "h": 84,
           "verification": "本地 DSH 加载 + 截图",
           "requirementIds": []
         },
@@ -2356,6 +2972,10 @@
           "id": "dflow-fork",
           "type": "process",
           "label": "fork Web 端并保留插件边界",
+          "x": 266,
+          "y": 768,
+          "w": 168,
+          "h": 84,
           "verification": "构建通过 + ADR 0003",
           "requirementIds": []
         },
@@ -2363,6 +2983,10 @@
           "id": "dflow-shell",
           "type": "process",
           "label": "实现壳/模式路由/面板注册",
+          "x": 436,
+          "y": 940,
+          "w": 168,
+          "h": 84,
           "verification": "1280px 可用；折叠/布局持久化",
           "requirementIds": []
         },
@@ -2370,6 +2994,10 @@
           "id": "dflow-modes",
           "type": "process",
           "label": "实现研究/行情/报告/核准模式",
+          "x": 436,
+          "y": 1112,
+          "w": 168,
+          "h": 84,
           "verification": "模式切换<100ms；K线10k<1s",
           "requirementIds": []
         },
@@ -2377,6 +3005,10 @@
           "id": "dflow-verify",
           "type": "process",
           "label": "e2e 与性能基线",
+          "x": 436,
+          "y": 1284,
+          "w": 168,
+          "h": 84,
           "verification": "e2e 全绿；回退可重跑",
           "requirementIds": []
         },
@@ -2384,6 +3016,10 @@
           "id": "dflow-d2",
           "type": "decision",
           "label": "验收通过？",
+          "x": 430,
+          "y": 1456,
+          "w": 180,
+          "h": 110,
           "condition": "四模式可用 + 性能达标 + 审批闭环",
           "requirementIds": []
         },
@@ -2391,6 +3027,10 @@
           "id": "dflow-rollback",
           "type": "process",
           "label": "回滚 v0.1.0-m0 并记录",
+          "x": 266,
+          "y": 1654,
+          "w": 168,
+          "h": 84,
           "verification": "恢复后 e2e 可重跑",
           "requirementIds": []
         },
@@ -2398,6 +3038,10 @@
           "id": "dflow-done",
           "type": "end",
           "label": "完成 M1/M2",
+          "x": 620,
+          "y": 1826,
+          "w": 140,
+          "h": 48,
           "requirementIds": []
         }
       ],
