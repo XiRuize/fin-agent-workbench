@@ -1,6 +1,6 @@
 # ADR 0002：四栏固定布局
 
-- 状态：Accepted
+- 状态：Superseded by [ADR 0004](0004-workbench-shell-over-four-panes.md)
 - 日期：2026-11-09
 
 ## 背景

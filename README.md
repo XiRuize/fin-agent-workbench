@@ -1,12 +1,14 @@
 # Fin Agent Workbench
 
-> 基于 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的金融智能体工作台：把「研究 → 假设核准 → 报告生成 → 导出 → 回滚」放进一个四栏界面。
+> 基于 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的金融智能体工作台：把「研究 → 假设核准 → 报告生成 → 导出 → 回滚」放进一个模式化工作台。
 
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/status-M0%20foundation-orange.svg)](docs/roadmap.md)
+[![Status](https://img.shields.io/badge/status-M1%20design-blue.svg)](docs/roadmap.md)
 [![DSH](https://img.shields.io/badge/DeepSeek%20Harness-0.2%2B-4b6bfb.svg)](https://github.com/deepseek-ai/deepseek-harness)
 
-> **Status: M0 — foundation.** 仓库正在搭建：协议、领域服务、架构文档先行，四栏 UI 与 DSH 插件随后接入。
+> **Status: M0 已完成；M1/M2 已规划。** 协议、领域服务、架构文档已在库；下一步是 DSH 承载 spike 与「左轨 + 主画布 + 可折叠 Dock」工作台。
+
+> **接手开发请先读 [HANDOFF.md](HANDOFF.md)**：仓库状态、蓝图、UI 规范与新对话提示词都在里面。
 
 ---
 
@@ -25,24 +27,26 @@ Fin Agent Workbench 把这些问题当作一等对象：数字有 `source_id` / 
 
 ## 它是什么
 
-一个四栏的人机协同工作台：
+一个「左轨 + 单主画布 + 可折叠 Dock」的工作台：
 
 ```text
-┌──────────────┬──────────────┬──────────────┬─────────────────────────┐
-│  ① 对话       │  ② 假设核准   │  ③ 文件树     │  ④ 预览 / 修改           │
-│              │              │              │                         │
-│  研究请求     │  待审假设     │  sources/    │  报告预览               │
-│  工具轨迹     │  证据正/反    │  analysis/   │  块级编辑               │
-│  引用跳转     │  批准/驳回    │  deliverables│  版本对比 / 评论         │
-└──────────────┴──────────────┴──────────────┴─────────────────────────┘
+┌────┬──────────────────────────────────────────────┬─────────────┐
+│ 模 │ 顶栏：标的 / as-of / 搜索 / 助手 / 布局 / 导出   │  右 Dock     │
+│ 式 ├──────────────────────────────────────────────┤  280–360px   │
+│ 轨 │              主画布（按模式切换）                │  可折叠      │
+│ 56 │                                              │             │
+├────┴──────────────────────────────────────────────┴─────────────┤
+│ 状态栏：数据新鲜度 · 模型 · token · 保存状态 · 版本                │
+└──────────────────────────────────────────────────────────────────┘
 ```
 
-- **左一 · 对话**：与主分析智能体协作，工具调用、引用、子智能体状态可见。
-- **左二 · 假设核准**：每条假设带证据、反证、可证伪条件、估值影响；人工批准后冻结版本。
-- **左三 · 文件树**：`sources/`（只读原始件）、`analysis/`（底稿）、`deliverables/`（交付物）三根分区。
-- **左四 · 预览/修改**：HTML/PPTX 预览、块级编辑、语义 diff、评论锚点，改动实时回流。
+- **模式**：研究、行情、文件、报告、核准、看板；`1–6` 或左轨切换。
+- **研究模式**：文件树 + 报告画布 + 假设/证据检查器 + 左侧对话 Dock + 底部迷你 K 线。
+- **行情模式**：自选 + 全宽 K 线 + 成交量 + MA/MACD/RSI + 标的详情。
+- **报告模式**：大纲 + 块级预览/编辑 + 属性/评论；源码是高级 Tab。
+- **折叠**：对话/检查器/文件树都可收起；Focus 模式隐藏全部 Dock。
 
-配套能力：一键导出 PDF/PPTX/DOCX、回合级版本回退、投研驾驶舱与运营看板。
+配套能力：一键导出 PDF/PPTX/DOCX、回合级版本回退、投研驾驶舱与运营看板。完整 UI 规范见 [docs/design/ui-shell.md](docs/design/ui-shell.md)。
 
 ---
 
@@ -50,7 +54,7 @@ Fin Agent Workbench 把这些问题当作一等对象：数字有 `source_id` / 
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
-│ L2 体验层   DSH Web Shell + 四栏工作台（React 插件 / fork）        │
+│ L2 体验层   DSH Web Shell + 模式化工作台（左轨 / 画布 / Dock）      │
 ├──────────────────────────────────────────────────────────────────┤
 │ L1 领域层   FastAPI：假设 / 证据 / 数据 / 计算 / 渲染 / 导出       │
 │              MCP Gateway：行情、公告、财报解析、估值、图表          │
@@ -84,21 +88,27 @@ Fin Agent Workbench 把这些问题当作一等对象：数字有 `source_id` / 
 
 ```text
 .
+├── HANDOFF.md                   # 新对话接手入口
 ├── docs/
 │   ├── architecture.md          # 三层架构与关键流程
 │   ├── roadmap.md               # M0–M5 路线图
+│   ├── design/ui-shell.md       # UI / 前端实现基准
+│   ├── blueprint/               # M1/M2 蓝图（md + json）
+│   ├── handoff/                 # 新对话提示词
 │   ├── adr/                     # 架构决策记录
 │   └── research/                # 选型调研底稿
 ├── packages/
 │   └── contracts/               # Hypothesis / Artifact JSON Schema
 ├── services/
 │   └── domain/                  # FastAPI 领域服务（假设、审计）
+├── scripts/
+│   └── export_blueprint.py      # 导出蓝图 JSON/Markdown
 ├── .github/workflows/           # CI
 ├── CONTRIBUTING.md
 └── LICENSE
 ```
 
-后续会加入 `apps/workbench`（DSH 插件 / 四栏 UI）与 `infra/`（本地 compose）。
+后续会加入 `apps/workbench`（DSH 插件 / 模式化 UI）与 `infra/`（本地 compose）。
 
 ---
 
@@ -134,7 +144,7 @@ pytest services/domain/tests -q
 | 阶段 | 目标 |
 |---|---|
 | M0 | 仓库、架构、契约、假设领域 API |
-| M1 | 四栏骨架、文件树懒加载、HTML 预览 |
+| M1 | 工作台壳 / 模式切换、文件树、报告画布、行情模式 |
 | M2 | 假设核准 UI、EvalGate、审计时间线 |
 | M3 | 数据网关、确定性估值、provenance |
 | M4 | 报告 DSL、PDF/PPTX 导出、版本回退 |

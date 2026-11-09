@@ -7,13 +7,13 @@
 | 阶段 | 目标 | 关键交付 | 验收 |
 |---|---|---|---|
 | **M0** 基础 | 固定边界与契约 | README、架构、ADR、JSON contracts、假设领域 API、CI | `pytest` 通过；README 可读 |
-| **M1** 四栏骨架 | 看见工作台 | DSH 插件/fork、四栏布局、文件树懒加载、HTML 预览 | 1440px 下四栏可用；树 1k 文件不卡 |
+| **M1** 工作台壳与模式 | 看见工作台 | DSH 插件/fork、左轨 + 画布 + Dock、模式路由、文件树、报告画布、行情模式 | 1280px 研究模式可用；树 1k 文件 <2s；K 线 10k <1s |
 | **M2** 核准闭环 | 假设可签字 | 审批队列、状态机 UI、EvalGate、审计时间线 | 一条假设走完 draft→frozen |
 | **M3** 领域层 | 数字可追溯 | 数据网关（OpenBB/AKShare/EDGAR）、DuckDB 快照、DCF/可比、provenance | 每个数字可下钻到 source/compute |
 | **M4** 报告与导出 | 可交付 | 报告 DSL、块级编辑、PDF/PPTX/DOCX、artifact manifest、版本回退 | 一键导出；回退 1 分钟内 |
 | **M5** 硬化 | 可运营 | 投研驾驶舱、权限/审计、评测集、部署 | 20 家公司 golden set；合规清单 |
 
-## M0（当前）
+## M0（已完成）
 
 - [x] 仓库、Apache-2.0、README
 - [x] 架构与路线图
@@ -24,11 +24,13 @@
 
 ## M1 任务拆解
 
-1. 3 天 spike：DSH client plugin 能否全屏接管；不行则 fork Web 端。
-2. 四栏布局：`react-resizable-panels`，宽度 24/20/18/38，可折叠。
-3. 文件树：按目录单层加载 + 虚拟滚动 + 面包屑 + 搜索。
-4. 预览：iframe sandbox + `report.json` 渲染器（先支持 text/chart/table）。
-5. Git 快照：每轮 agent 结束 commit，UI 显示最近 20 个版本。
+1. 3 天 spike：DSH client plugin 能否承载「模式轨 + 主画布 + Dock」；不行则 fork Web 端。
+2. 工作台壳：左轨 56px + 顶栏 + 可折叠 Dock + Focus 模式；`react-resizable-panels`。
+3. 模式路由与面板注册：`1–6` 切换、深链、布局持久化。
+4. 文件树：单层加载 + 虚拟滚动 + 面包屑 + 搜索。
+5. 报告画布：iframe sandbox + `report.json` 渲染 text/chart/table。
+6. 行情模式：自选 + 全宽 K 线 + 成交量 + MA/MACD/RSI。
+7. Git 快照：每轮 agent 结束 commit，面板显示最近 20 个版本。
 
 ## M2 任务拆解
 

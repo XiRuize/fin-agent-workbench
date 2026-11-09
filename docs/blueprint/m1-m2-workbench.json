@@ -1,0 +1,3541 @@
+{
+  "title": "M1/M2 工作台壳、模式切换与假设核准闭环",
+  "summary": "放弃固定四栏，改为「左侧模式轨 + 单主画布 + 可折叠 Dock」：研究/行情/文件/报告/核准/看板六个模式通过左轨与快捷键切换，每个模式内部用可折叠面板组合；K线作为独立行情模式获得整屏宽度，研究模式只保留底部迷你K线。聊天默认左侧 Dock，检查器默认右侧 Dock，Focus 模式隐藏全部 Dock。",
+  "prompt": "基于已完成的 M0（仓库、架构、契约、假设领域 API），用蓝图规划下一阶段：DSH 插件承载能力验证、四栏工作台骨架、文件树懒加载、report.json 预览器、Git 快照/回退、假设核准队列与审计时间线。要求模块可独立分派、有明确文件边界与验收标准，并标出 DSH 插件不足时 fork Web 端的回退分支。",
+  "layers": [
+    {
+      "id": "A",
+      "letter": "A",
+      "title": "总览",
+      "parentModuleId": null
+    },
+    {
+      "id": "B",
+      "letter": "B",
+      "title": "工作台壳与模式（M1）",
+      "parentModuleId": "m1-workbench"
+    },
+    {
+      "id": "C",
+      "letter": "C",
+      "title": "核准模式（M2）",
+      "parentModuleId": "m1-workbench"
+    },
+    {
+      "id": "D",
+      "letter": "D",
+      "title": "验证与交付",
+      "parentModuleId": "m1-workbench"
+    }
+  ],
+  "sections": [
+    {
+      "key": "goals",
+      "title": "目标",
+      "items": [
+        {
+          "id": "g1",
+          "uid": "goals:g1",
+          "text": "在 DSH Web 内落地可运行的工作台：模式轨 + 主画布 + 可折叠 Dock，取代固定四栏。",
+          "code": "R1",
+          "moduleId": "layout-shell"
+        },
+        {
+          "id": "g2",
+          "uid": "goals:g2",
+          "text": "文件树支持 sources/analysis/deliverables 三根分区，单层懒加载 + 虚拟滚动。",
+          "code": "R2",
+          "moduleId": "file-tree"
+        },
+        {
+          "id": "g3",
+          "uid": "goals:g3",
+          "text": "报告画布支持 report.json 的 text/chart/table 块，iframe 沙箱隔离。",
+          "code": "R3",
+          "moduleId": "preview"
+        },
+        {
+          "id": "g4",
+          "uid": "goals:g4",
+          "text": "假设核准走通 draft→frozen，带证据、可证伪条件与审计事件。",
+          "code": "R4",
+          "moduleId": "approval-queue"
+        },
+        {
+          "id": "g5",
+          "uid": "goals:g5",
+          "text": "每个 agent turn 自动 Git 快照，UI 可查看最近 20 个版本并回退。",
+          "code": "R5",
+          "moduleId": "versions"
+        },
+        {
+          "id": "g6",
+          "uid": "goals:g6",
+          "text": "行情作为独立模式：全宽 K 线、成交量、MA/MACD/RSI；研究模式只保留底部迷你 K 线。",
+          "code": "R40",
+          "moduleId": "market-panel"
+        },
+        {
+          "id": "g7",
+          "uid": "goals:g7",
+          "text": "用模式切换 + 面板折叠承载页面切换，替代四个固定栏；切回保留滚动、选中与布局。",
+          "code": "R48",
+          "moduleId": "mode-router"
+        }
+      ]
+    },
+    {
+      "key": "functional",
+      "title": "功能",
+      "items": [
+        {
+          "id": "f1",
+          "uid": "functional:f1",
+          "text": "工作台壳：左侧 56px 模式轨 + 顶栏 + 主画布 + 可折叠 Dock + 状态栏。",
+          "code": "R11",
+          "moduleId": "layout-shell"
+        },
+        {
+          "id": "f2",
+          "uid": "functional:f2",
+          "text": "对话 Dock 复用 DSH session，默认左侧 320px，可折叠/换边/浮层。",
+          "code": "R12",
+          "moduleId": "layout-shell"
+        },
+        {
+          "id": "f3",
+          "uid": "functional:f3",
+          "text": "核准模式：待审队列 + 假设详情 + 审计时间线，支持批准/修改后批准/驳回。",
+          "code": "R13",
+          "moduleId": "approval-mode"
+        },
+        {
+          "id": "f4",
+          "uid": "functional:f4",
+          "text": "文件树作为可折叠面板：面包屑、搜索、右键菜单、版本徽标。",
+          "code": "R14",
+          "moduleId": "file-tree"
+        },
+        {
+          "id": "f5",
+          "uid": "functional:f5",
+          "text": "报告模式：大纲 + 块级预览/编辑 + 属性/评论；源码作为高级 Tab。",
+          "code": "R15",
+          "moduleId": "report-mode"
+        },
+        {
+          "id": "f6",
+          "uid": "functional:f6",
+          "text": "版本面板显示最近 20 个 Git 快照、diff 摘要与一键回退。",
+          "code": "R16",
+          "moduleId": "versions"
+        },
+        {
+          "id": "f7",
+          "uid": "functional:f7",
+          "text": "审批状态变更写 append-only 事件，UI 显示操作者、时间与依据。",
+          "code": "R17",
+          "moduleId": "approval-flow"
+        },
+        {
+          "id": "f8",
+          "uid": "functional:f8",
+          "text": "所有面板通过统一 Workspace API 读取文件与版本，不直连宿主机。",
+          "code": "R18",
+          "moduleId": "file-tree"
+        },
+        {
+          "id": "f9",
+          "uid": "functional:f9",
+          "text": "行情模式：自选/搜索 + 全宽 K 线 + 标的详情；日/周/月/分钟周期。",
+          "code": "R41",
+          "moduleId": "market-panel"
+        },
+        {
+          "id": "f10",
+          "uid": "functional:f10",
+          "text": "K 线支持十字光标、成交量、MA/MACD/RSI 切换与 as-of 时间。",
+          "code": "R42",
+          "moduleId": "market-panel"
+        },
+        {
+          "id": "f11",
+          "uid": "functional:f11",
+          "text": "K 线数据来自行情服务快照，前端禁止直连数据源；缺数据标注 n.a.。",
+          "code": "R43",
+          "moduleId": "market-panel"
+        },
+        {
+          "id": "f12",
+          "uid": "functional:f12",
+          "text": "左轨模式切换：研究/行情/文件/报告/核准/看板；快捷键 1–6。",
+          "code": "R49",
+          "moduleId": "mode-router"
+        },
+        {
+          "id": "f13",
+          "uid": "functional:f13",
+          "text": "研究模式 = 文件树 + 报告画布 + 假设检查器 + 左侧对话 Dock + 底部迷你 K 线。",
+          "code": "R50",
+          "moduleId": "research-mode"
+        },
+        {
+          "id": "f14",
+          "uid": "functional:f14",
+          "text": "面板可折叠、换边、拖拽宽度；Focus 模式隐藏所有 Dock，Esc 退出。",
+          "code": "R51",
+          "moduleId": "panel-registry"
+        },
+        {
+          "id": "f15",
+          "uid": "functional:f15",
+          "text": "深链：#/research/:id、#/market/:symbol、#/report/:id?tab=preview，刷新恢复现场。",
+          "code": "R52",
+          "moduleId": "mode-router"
+        }
+      ]
+    },
+    {
+      "key": "nonfunctional",
+      "title": "非功能",
+      "items": [
+        {
+          "id": "n1",
+          "uid": "nonfunctional:n1",
+          "text": "1280×800 下研究模式可用；<1024 单 Dock 抽屉；<780 单列只读。",
+          "code": "R19"
+        },
+        {
+          "id": "n2",
+          "uid": "nonfunctional:n2",
+          "text": "1,000 个文件的目录首屏 < 2s，滚动 60fps。",
+          "code": "R20"
+        },
+        {
+          "id": "n3",
+          "uid": "nonfunctional:n3",
+          "text": "面板交互 p95 < 100ms；流式期间不阻塞输入。",
+          "code": "R21"
+        },
+        {
+          "id": "n4",
+          "uid": "nonfunctional:n4",
+          "text": "本地优先：默认 SQLite + 本地 Git，可替换 Postgres/对象存储。",
+          "code": "R22"
+        },
+        {
+          "id": "n5",
+          "uid": "nonfunctional:n5",
+          "text": "所有工具调用与审批可审计；不在前端暴露密钥。",
+          "code": "R23"
+        },
+        {
+          "id": "n6",
+          "uid": "nonfunctional:n6",
+          "text": "10,000 根 K 线首屏 < 1s，缩放/平移 60fps；行情模式展开 < 100ms。",
+          "code": "R44"
+        },
+        {
+          "id": "n7",
+          "uid": "nonfunctional:n7",
+          "text": "模式切换与面板折叠 < 100ms；切回保留滚动位置、选中项与宽度。",
+          "code": "R53"
+        },
+        {
+          "id": "n8",
+          "uid": "nonfunctional:n8",
+          "text": "模式/面板状态按 workspace + mode 持久化；提供“重置布局”。",
+          "code": "R54"
+        }
+      ]
+    },
+    {
+      "key": "constraints",
+      "title": "约束",
+      "items": [
+        {
+          "id": "c1",
+          "uid": "constraints:c1",
+          "text": "DSH 0.2.x，client plugin API 可能不足，允许 fork Web 端（MIT）。",
+          "code": "R24"
+        },
+        {
+          "id": "c2",
+          "uid": "constraints:c2",
+          "text": "前端 React 18 + TypeScript；布局用 react-resizable-panels。",
+          "code": "R25"
+        },
+        {
+          "id": "c3",
+          "uid": "constraints:c3",
+          "text": "领域服务 FastAPI + Pydantic v2；MVP 用 SQLite。",
+          "code": "R26"
+        },
+        {
+          "id": "c4",
+          "uid": "constraints:c4",
+          "text": "不引入第二套 agent 编排器；审批是状态机，不是 agent。",
+          "code": "R27"
+        },
+        {
+          "id": "c5",
+          "uid": "constraints:c5",
+          "text": "不提交真实客户数据/未授权行情；样例必须标注 synthetic。",
+          "code": "R28"
+        },
+        {
+          "id": "c6",
+          "uid": "constraints:c6",
+          "text": "Apache-2.0；新增依赖先过许可证检查。",
+          "code": "R29"
+        },
+        {
+          "id": "c7",
+          "uid": "constraints:c7",
+          "text": "行情图优先 ECharts；若 10k 根性能不足再评估 klinecharts（Apache-2.0）。",
+          "code": "R45"
+        },
+        {
+          "id": "c8",
+          "uid": "constraints:c8",
+          "text": "不用 qiankun/微前端；用 React.lazy + panel registry 做模块边界。",
+          "code": "R55"
+        },
+        {
+          "id": "c9",
+          "uid": "constraints:c9",
+          "text": "样式用 DSH CSS tokens + CSS Modules，不引 Ant Design/Tailwind。",
+          "code": "R56"
+        },
+        {
+          "id": "c10",
+          "uid": "constraints:c10",
+          "text": "废弃固定四栏；对话默认左 Dock，检查器默认右 Dock，允许换边。",
+          "code": "R57"
+        }
+      ]
+    },
+    {
+      "key": "acceptance",
+      "title": "验收",
+      "items": [
+        {
+          "id": "ac1",
+          "uid": "acceptance:ac1",
+          "text": "研究模式在 1280px 下可用，折叠/恢复不丢状态。",
+          "code": "R30"
+        },
+        {
+          "id": "ac2",
+          "uid": "acceptance:ac2",
+          "text": "文件树加载 1k 文件 < 2s，滚动无明显卡顿。",
+          "code": "R31"
+        },
+        {
+          "id": "ac3",
+          "uid": "acceptance:ac3",
+          "text": "报告画布正确渲染 text/chart/table 三种块，iframe 无法访问父页面。",
+          "code": "R32"
+        },
+        {
+          "id": "ac4",
+          "uid": "acceptance:ac4",
+          "text": "一条假设从 draft 走到 frozen，审计事件 5 条且顺序正确。",
+          "code": "R33"
+        },
+        {
+          "id": "ac5",
+          "uid": "acceptance:ac5",
+          "text": "最近 20 个 Git 快照可查看/回退，回退后 e2e 可重跑。",
+          "code": "R34"
+        },
+        {
+          "id": "ac6",
+          "uid": "acceptance:ac6",
+          "text": "行情模式 K 线 + 成交量 + MA/MACD/RSI 正确渲染，10k 根 < 1s。",
+          "code": "R46"
+        },
+        {
+          "id": "ac7",
+          "uid": "acceptance:ac7",
+          "text": "模式切换 < 100ms；刷新后恢复模式、面板布局与选中项。",
+          "code": "R58"
+        },
+        {
+          "id": "ac8",
+          "uid": "acceptance:ac8",
+          "text": "Focus 模式隐藏所有 Dock；Esc 恢复；窄屏无横向滚动。",
+          "code": "R59"
+        }
+      ]
+    },
+    {
+      "key": "risks",
+      "title": "风险",
+      "items": [
+        {
+          "id": "r1",
+          "uid": "risks:r1",
+          "text": "DSH 插件插槽不足，四栏需 fork，带来上游合并成本。",
+          "code": "R35"
+        },
+        {
+          "id": "r2",
+          "uid": "risks:r2",
+          "text": "文件树/报告画布在低配机器上性能不达标。",
+          "code": "R36"
+        },
+        {
+          "id": "r3",
+          "uid": "risks:r3",
+          "text": "审批语义被聊天记录稀释，用户绕过队列。",
+          "code": "R37"
+        },
+        {
+          "id": "r4",
+          "uid": "risks:r4",
+          "text": "Git 快照频率过高导致仓库膨胀。",
+          "code": "R38"
+        },
+        {
+          "id": "r5",
+          "uid": "risks:r5",
+          "text": "报告 iframe 的 XSS/越权风险。",
+          "code": "R39"
+        },
+        {
+          "id": "r6",
+          "uid": "risks:r6",
+          "text": "行情数据授权/实时性、K 线渲染性能。",
+          "code": "R47"
+        },
+        {
+          "id": "r7",
+          "uid": "risks:r7",
+          "text": "模式切换时组件卸载重建，导致滚动/选中/布局丢失。",
+          "code": "R60"
+        },
+        {
+          "id": "r8",
+          "uid": "risks:r8",
+          "text": "窄屏 Dock 层叠，导致主画布不可用。",
+          "code": "R61"
+        }
+      ]
+    },
+    {
+      "key": "actors",
+      "title": "角色与场景",
+      "items": [
+        {
+          "id": "a1",
+          "uid": "actors:a1",
+          "text": "分析师：发起研究、浏览文件、查看报告。",
+          "code": "R6"
+        },
+        {
+          "id": "a2",
+          "uid": "actors:a2",
+          "text": "审批人：核准/驳回假设，填写条件。",
+          "code": "R7"
+        },
+        {
+          "id": "a3",
+          "uid": "actors:a3",
+          "text": "DSH Lead Agent：规划、调用子智能体、写工作区。",
+          "code": "R8"
+        },
+        {
+          "id": "a4",
+          "uid": "actors:a4",
+          "text": "数据/估值子智能体：只读数据、运行受限代码。",
+          "code": "R9"
+        },
+        {
+          "id": "a5",
+          "uid": "actors:a5",
+          "text": "系统管理员：配置数据源、权限与审计。",
+          "code": "R10"
+        }
+      ]
+    }
+  ],
+  "diagrams": [
+    {
+      "key": "usecase",
+      "layerId": "A",
+      "type": "usecase",
+      "title": "工作台用例",
+      "nodes": [
+        {
+          "id": "uc-analyst",
+          "type": "actor",
+          "label": "分析师",
+          "x": 70,
+          "y": 110,
+          "w": 90,
+          "h": 104,
+          "requirementIds": []
+        },
+        {
+          "id": "uc-approver",
+          "type": "actor",
+          "label": "审批人",
+          "x": 70,
+          "y": 270,
+          "w": 90,
+          "h": 104,
+          "requirementIds": []
+        },
+        {
+          "id": "uc-lead",
+          "type": "actor",
+          "label": "DSH Lead Agent",
+          "x": 70,
+          "y": 430,
+          "w": 90,
+          "h": 104,
+          "requirementIds": []
+        },
+        {
+          "id": "uc-system",
+          "type": "system",
+          "label": "Fin Agent Workbench",
+          "x": 260,
+          "y": 44,
+          "w": 502,
+          "h": 512,
+          "requirementIds": []
+        },
+        {
+          "id": "uc-workbench",
+          "type": "usecase",
+          "label": "使用四栏工作台",
+          "x": 300,
+          "y": 92,
+          "w": 176,
+          "h": 64,
+          "requirementIds": [
+            "goals:g1"
+          ]
+        },
+        {
+          "id": "uc-approve",
+          "type": "usecase",
+          "label": "核准假设",
+          "x": 546,
+          "y": 92,
+          "w": 176,
+          "h": 64,
+          "requirementIds": [
+            "goals:g4"
+          ]
+        },
+        {
+          "id": "uc-files",
+          "type": "usecase",
+          "label": "浏览与检索文件",
+          "x": 300,
+          "y": 212,
+          "w": 176,
+          "h": 64,
+          "requirementIds": [
+            "goals:g2"
+          ]
+        },
+        {
+          "id": "uc-preview",
+          "type": "usecase",
+          "label": "预览与修改报告",
+          "x": 546,
+          "y": 212,
+          "w": 176,
+          "h": 64,
+          "requirementIds": [
+            "goals:g3"
+          ]
+        },
+        {
+          "id": "uc-version",
+          "type": "usecase",
+          "label": "查看与回退版本",
+          "x": 300,
+          "y": 332,
+          "w": 176,
+          "h": 64,
+          "requirementIds": [
+            "goals:g5"
+          ]
+        },
+        {
+          "id": "uc-market",
+          "type": "usecase",
+          "label": "查看K线与指标",
+          "x": 546,
+          "y": 332,
+          "w": 176,
+          "h": 64,
+          "requirementIds": [
+            "goals:g6",
+            "functional:f9"
+          ]
+        },
+        {
+          "id": "uc-modes",
+          "type": "usecase",
+          "label": "切换工作台模式",
+          "x": 300,
+          "y": 452,
+          "w": 176,
+          "h": 64,
+          "requirementIds": [
+            "goals:g7",
+            "functional:f12"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "uc-analyst",
+          "to": "uc-workbench",
+          "label": "发起研究"
+        },
+        {
+          "id": "e2",
+          "from": "uc-analyst",
+          "to": "uc-files",
+          "label": "浏览"
+        },
+        {
+          "id": "e3",
+          "from": "uc-analyst",
+          "to": "uc-preview",
+          "label": "查看"
+        },
+        {
+          "id": "e4",
+          "from": "uc-approver",
+          "to": "uc-approve",
+          "label": "签字"
+        },
+        {
+          "id": "e5",
+          "from": "uc-approver",
+          "to": "uc-version",
+          "label": "回退"
+        },
+        {
+          "id": "e6",
+          "from": "uc-lead",
+          "to": "uc-workbench",
+          "label": "写工作区"
+        },
+        {
+          "id": "e7",
+          "from": "uc-workbench",
+          "to": "uc-system",
+          "label": "包含"
+        },
+        {
+          "id": "e8",
+          "from": "uc-approve",
+          "to": "uc-system",
+          "label": "包含"
+        },
+        {
+          "id": "e9",
+          "from": "uc-analyst",
+          "to": "uc-market",
+          "label": "看行情"
+        },
+        {
+          "id": "e10",
+          "from": "uc-market",
+          "to": "uc-system",
+          "label": "包含"
+        },
+        {
+          "id": "e11",
+          "from": "uc-analyst",
+          "to": "uc-modes",
+          "label": "切换"
+        },
+        {
+          "id": "e12",
+          "from": "uc-modes",
+          "to": "uc-system",
+          "label": "包含"
+        }
+      ]
+    },
+    {
+      "key": "dfd",
+      "layerId": "A",
+      "type": "dfd",
+      "title": "数据流",
+      "nodes": [
+        {
+          "id": "dfd-user",
+          "type": "entity",
+          "label": "分析师/审批人",
+          "x": 70,
+          "y": 100,
+          "w": 158,
+          "h": 72,
+          "requirementIds": []
+        },
+        {
+          "id": "dfd-ui",
+          "type": "process",
+          "label": "四栏工作台",
+          "x": 380,
+          "y": 100,
+          "w": 168,
+          "h": 84,
+          "requirementIds": []
+        },
+        {
+          "id": "dfd-domain",
+          "type": "process",
+          "label": "领域服务",
+          "x": 380,
+          "y": 240,
+          "w": 168,
+          "h": 84,
+          "requirementIds": []
+        },
+        {
+          "id": "dfd-dsh",
+          "type": "process",
+          "label": "DSH Agent",
+          "x": 380,
+          "y": 380,
+          "w": 168,
+          "h": 84,
+          "requirementIds": []
+        },
+        {
+          "id": "dfd-workspace",
+          "type": "store",
+          "label": "工作区文件",
+          "x": 720,
+          "y": 100,
+          "w": 164,
+          "h": 62,
+          "requirementIds": []
+        },
+        {
+          "id": "dfd-db",
+          "type": "store",
+          "label": "Hypothesis DB",
+          "x": 720,
+          "y": 240,
+          "w": 164,
+          "h": 62,
+          "requirementIds": []
+        },
+        {
+          "id": "dfd-git",
+          "type": "store",
+          "label": "Git 快照",
+          "x": 720,
+          "y": 380,
+          "w": 164,
+          "h": 62,
+          "requirementIds": []
+        },
+        {
+          "id": "dfd-market",
+          "type": "process",
+          "label": "行情服务",
+          "x": 380,
+          "y": 520,
+          "w": 168,
+          "h": 84,
+          "requirementIds": []
+        },
+        {
+          "id": "dfd-market-store",
+          "type": "store",
+          "label": "行情快照",
+          "x": 720,
+          "y": 520,
+          "w": 164,
+          "h": 62,
+          "requirementIds": []
+        },
+        {
+          "id": "dfd-data",
+          "type": "entity",
+          "label": "行情源",
+          "x": 70,
+          "y": 240,
+          "w": 158,
+          "h": 72,
+          "requirementIds": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "dfd-user",
+          "to": "dfd-ui",
+          "label": "操作"
+        },
+        {
+          "id": "e2",
+          "from": "dfd-ui",
+          "to": "dfd-dsh",
+          "label": "session"
+        },
+        {
+          "id": "e3",
+          "from": "dfd-dsh",
+          "to": "dfd-domain",
+          "label": "MCP/HTTP"
+        },
+        {
+          "id": "e4",
+          "from": "dfd-ui",
+          "to": "dfd-domain",
+          "label": "REST"
+        },
+        {
+          "id": "e5",
+          "from": "dfd-domain",
+          "to": "dfd-db",
+          "label": "读写假设"
+        },
+        {
+          "id": "e6",
+          "from": "dfd-ui",
+          "to": "dfd-workspace",
+          "label": "文件树/预览"
+        },
+        {
+          "id": "e7",
+          "from": "dfd-domain",
+          "to": "dfd-git",
+          "label": "commit"
+        },
+        {
+          "id": "e8",
+          "from": "dfd-dsh",
+          "to": "dfd-workspace",
+          "label": "写底稿"
+        },
+        {
+          "id": "e9",
+          "from": "dfd-ui",
+          "to": "dfd-market",
+          "label": "K线查询"
+        },
+        {
+          "id": "e10",
+          "from": "dfd-market",
+          "to": "dfd-market-store",
+          "label": "读写 bars"
+        },
+        {
+          "id": "e11",
+          "from": "dfd-market",
+          "to": "dfd-ui",
+          "label": "OHLCV + 指标"
+        },
+        {
+          "id": "e12",
+          "from": "dfd-data",
+          "to": "dfd-market",
+          "label": "原始行情"
+        }
+      ]
+    },
+    {
+      "key": "module",
+      "layerId": "A",
+      "type": "module",
+      "title": "模块依赖",
+      "nodes": [
+        {
+          "id": "mod-a1",
+          "type": "module",
+          "label": "A1 工作台总控",
+          "x": 90,
+          "y": 100,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b1",
+          "type": "module",
+          "label": "B1 DSH 承载 spike",
+          "x": 370,
+          "y": 100,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b2",
+          "type": "module",
+          "label": "B2 工作台壳（左轨+Dock）",
+          "x": 650,
+          "y": 100,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b3",
+          "type": "module",
+          "label": "B3 文件树",
+          "x": 930,
+          "y": 100,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b4",
+          "type": "module",
+          "label": "B4 预览器",
+          "x": 930,
+          "y": 242,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b5",
+          "type": "module",
+          "label": "B5 版本快照",
+          "x": 1210,
+          "y": 100,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-c1",
+          "type": "module",
+          "label": "C1 审批队列",
+          "x": 930,
+          "y": 384,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-c2",
+          "type": "module",
+          "label": "C2 状态机/审计",
+          "x": 1210,
+          "y": 242,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-d1",
+          "type": "module",
+          "label": "D1 e2e 验收",
+          "x": 1490,
+          "y": 100,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-d2",
+          "type": "module",
+          "label": "D2 CI/构建/文档",
+          "x": 1490,
+          "y": 242,
+          "w": 196,
+          "h": 86,
+          "moduleId": "ci-build",
+          "requirementIds": []
+        },
+        {
+          "id": "ext-dsh",
+          "type": "external",
+          "label": "DSH 内核",
+          "x": 90,
+          "y": 228,
+          "w": 176,
+          "h": 72,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b6",
+          "type": "module",
+          "label": "B6 行情模式",
+          "x": 1210,
+          "y": 384,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "ext-market",
+          "type": "external",
+          "label": "行情源",
+          "x": 930,
+          "y": 484,
+          "w": 176,
+          "h": 72,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b7",
+          "type": "module",
+          "label": "B7 模式路由",
+          "x": 930,
+          "y": 668,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b8",
+          "type": "module",
+          "label": "B8 面板注册与布局",
+          "x": 930,
+          "y": 810,
+          "w": 196,
+          "h": 86,
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b9",
+          "type": "module",
+          "label": "B9 研究模式",
+          "x": 1210,
+          "y": 526,
+          "w": 196,
+          "h": 86,
+          "moduleId": "research-mode",
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b10",
+          "type": "module",
+          "label": "B10 报告模式",
+          "x": 1210,
+          "y": 668,
+          "w": 196,
+          "h": 86,
+          "moduleId": "report-mode",
+          "requirementIds": []
+        },
+        {
+          "id": "mod-b11",
+          "type": "module",
+          "label": "B11 核准模式",
+          "x": 1210,
+          "y": 810,
+          "w": 196,
+          "h": 86,
+          "moduleId": "approval-mode",
+          "requirementIds": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "mod-a1",
+          "to": "mod-b1",
+          "label": "包含",
+          "kind": "depends"
+        },
+        {
+          "id": "e2",
+          "from": "mod-b1",
+          "to": "mod-b2",
+          "label": "决定形态",
+          "kind": "depends"
+        },
+        {
+          "id": "e3",
+          "from": "mod-b2",
+          "to": "mod-b3",
+          "label": "依赖",
+          "kind": "depends"
+        },
+        {
+          "id": "e4",
+          "from": "mod-b2",
+          "to": "mod-b4",
+          "label": "依赖",
+          "kind": "depends"
+        },
+        {
+          "id": "e5",
+          "from": "mod-b2",
+          "to": "mod-b5",
+          "label": "依赖",
+          "kind": "depends"
+        },
+        {
+          "id": "e6",
+          "from": "mod-b2",
+          "to": "mod-c1",
+          "label": "依赖",
+          "kind": "depends"
+        },
+        {
+          "id": "e7",
+          "from": "mod-c1",
+          "to": "mod-c2",
+          "label": "依赖",
+          "kind": "depends"
+        },
+        {
+          "id": "e8",
+          "from": "mod-b3",
+          "to": "mod-d1",
+          "label": "验收",
+          "kind": "depends"
+        },
+        {
+          "id": "e9",
+          "from": "mod-b4",
+          "to": "mod-d1",
+          "label": "验收",
+          "kind": "depends"
+        },
+        {
+          "id": "e10",
+          "from": "mod-b5",
+          "to": "mod-d1",
+          "label": "验收",
+          "kind": "depends"
+        },
+        {
+          "id": "e11",
+          "from": "mod-c2",
+          "to": "mod-d1",
+          "label": "验收",
+          "kind": "depends"
+        },
+        {
+          "id": "e12",
+          "from": "mod-b2",
+          "to": "mod-d2",
+          "label": "构建",
+          "kind": "depends"
+        },
+        {
+          "id": "e13",
+          "from": "ext-dsh",
+          "to": "mod-b1",
+          "label": "宿主",
+          "kind": "depends"
+        },
+        {
+          "id": "e14",
+          "from": "mod-b2",
+          "to": "mod-b6",
+          "label": "依赖",
+          "kind": "depends"
+        },
+        {
+          "id": "e15",
+          "from": "mod-b6",
+          "to": "mod-d1",
+          "label": "验收",
+          "kind": "depends"
+        },
+        {
+          "id": "e16",
+          "from": "ext-market",
+          "to": "mod-b6",
+          "label": "数据",
+          "kind": "depends"
+        },
+        {
+          "id": "e17",
+          "from": "mod-b2",
+          "to": "mod-b7",
+          "label": "依赖",
+          "kind": "depends"
+        },
+        {
+          "id": "e18",
+          "from": "mod-b2",
+          "to": "mod-b8",
+          "label": "依赖",
+          "kind": "depends"
+        },
+        {
+          "id": "e19",
+          "from": "mod-b7",
+          "to": "mod-b9",
+          "label": "挂载",
+          "kind": "depends"
+        },
+        {
+          "id": "e20",
+          "from": "mod-b8",
+          "to": "mod-b9",
+          "label": "布局",
+          "kind": "depends"
+        },
+        {
+          "id": "e21",
+          "from": "mod-b3",
+          "to": "mod-b9",
+          "label": "文件树",
+          "kind": "depends"
+        },
+        {
+          "id": "e22",
+          "from": "mod-b4",
+          "to": "mod-b9",
+          "label": "画布",
+          "kind": "depends"
+        },
+        {
+          "id": "e23",
+          "from": "mod-b7",
+          "to": "mod-b6",
+          "label": "挂载",
+          "kind": "depends"
+        },
+        {
+          "id": "e24",
+          "from": "mod-b8",
+          "to": "mod-b6",
+          "label": "布局",
+          "kind": "depends"
+        },
+        {
+          "id": "e25",
+          "from": "mod-b7",
+          "to": "mod-b10",
+          "label": "挂载",
+          "kind": "depends"
+        },
+        {
+          "id": "e26",
+          "from": "mod-b8",
+          "to": "mod-b10",
+          "label": "布局",
+          "kind": "depends"
+        },
+        {
+          "id": "e27",
+          "from": "mod-b4",
+          "to": "mod-b10",
+          "label": "画布",
+          "kind": "depends"
+        },
+        {
+          "id": "e28",
+          "from": "mod-b7",
+          "to": "mod-b11",
+          "label": "挂载",
+          "kind": "depends"
+        },
+        {
+          "id": "e29",
+          "from": "mod-b8",
+          "to": "mod-b11",
+          "label": "布局",
+          "kind": "depends"
+        },
+        {
+          "id": "e30",
+          "from": "mod-c1",
+          "to": "mod-b11",
+          "label": "队列",
+          "kind": "depends"
+        },
+        {
+          "id": "e31",
+          "from": "mod-b9",
+          "to": "mod-d1",
+          "label": "验收",
+          "kind": "depends"
+        },
+        {
+          "id": "e32",
+          "from": "mod-b10",
+          "to": "mod-d1",
+          "label": "验收",
+          "kind": "depends"
+        },
+        {
+          "id": "e33",
+          "from": "mod-b11",
+          "to": "mod-d1",
+          "label": "验收",
+          "kind": "depends"
+        }
+      ]
+    },
+    {
+      "key": "sequence",
+      "layerId": "A",
+      "type": "sequence",
+      "title": "打开→预览→核准→快照",
+      "nodes": [
+        {
+          "id": "sq-analyst",
+          "type": "actor",
+          "label": "分析师",
+          "x": 80,
+          "y": 64,
+          "w": 130,
+          "h": 84,
+          "requirementIds": []
+        },
+        {
+          "id": "sq-ui",
+          "type": "participant",
+          "label": "Workbench UI",
+          "x": 310,
+          "y": 64,
+          "w": 170,
+          "h": 52,
+          "requirementIds": []
+        },
+        {
+          "id": "sq-domain",
+          "type": "participant",
+          "label": "Domain API",
+          "x": 540,
+          "y": 64,
+          "w": 170,
+          "h": 52,
+          "requirementIds": []
+        },
+        {
+          "id": "sq-dsh",
+          "type": "participant",
+          "label": "DSH Agent",
+          "x": 770,
+          "y": 64,
+          "w": 170,
+          "h": 52,
+          "requirementIds": []
+        },
+        {
+          "id": "sq-git",
+          "type": "participant",
+          "label": "Git",
+          "x": 1000,
+          "y": 64,
+          "w": 170,
+          "h": 52,
+          "requirementIds": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "sq-analyst",
+          "to": "sq-ui",
+          "label": "打开会话",
+          "kind": "sync",
+          "order": 1
+        },
+        {
+          "id": "e2",
+          "from": "sq-ui",
+          "to": "sq-dsh",
+          "label": "恢复 session",
+          "kind": "sync",
+          "order": 2
+        },
+        {
+          "id": "e3",
+          "from": "sq-dsh",
+          "to": "sq-ui",
+          "label": "流式事件",
+          "kind": "async",
+          "order": 3
+        },
+        {
+          "id": "e4",
+          "from": "sq-ui",
+          "to": "sq-domain",
+          "label": "GET /hypotheses?status=under_review",
+          "kind": "sync",
+          "order": 4
+        },
+        {
+          "id": "e5",
+          "from": "sq-domain",
+          "to": "sq-ui",
+          "label": "待审列表",
+          "kind": "return",
+          "order": 5
+        },
+        {
+          "id": "e6",
+          "from": "sq-analyst",
+          "to": "sq-ui",
+          "label": "查看文件",
+          "kind": "sync",
+          "order": 6
+        },
+        {
+          "id": "e7",
+          "from": "sq-ui",
+          "to": "sq-domain",
+          "label": "GET /workspace/tree",
+          "kind": "sync",
+          "order": 7
+        },
+        {
+          "id": "e8",
+          "from": "sq-domain",
+          "to": "sq-ui",
+          "label": "目录条目",
+          "kind": "return",
+          "order": 8
+        },
+        {
+          "id": "e9",
+          "from": "sq-analyst",
+          "to": "sq-ui",
+          "label": "批准假设",
+          "kind": "sync",
+          "order": 9
+        },
+        {
+          "id": "e10",
+          "from": "sq-ui",
+          "to": "sq-domain",
+          "label": "POST /transitions",
+          "kind": "sync",
+          "order": 10
+        },
+        {
+          "id": "e11",
+          "from": "sq-domain",
+          "to": "sq-git",
+          "label": "commit snapshot",
+          "kind": "async",
+          "order": 11
+        },
+        {
+          "id": "e12",
+          "from": "sq-domain",
+          "to": "sq-ui",
+          "label": "approved + event",
+          "kind": "return",
+          "order": 12
+        },
+        {
+          "id": "e13",
+          "from": "sq-ui",
+          "to": "sq-dsh",
+          "label": "继续生成报告",
+          "kind": "async",
+          "order": 13
+        },
+        {
+          "id": "e14",
+          "from": "sq-ui",
+          "to": "sq-domain",
+          "label": "GET /market/bars?symbol&timeframe",
+          "kind": "sync",
+          "order": 14
+        },
+        {
+          "id": "e15",
+          "from": "sq-domain",
+          "to": "sq-ui",
+          "label": "OHLCV + MA/MACD/RSI",
+          "kind": "return",
+          "order": 15
+        },
+        {
+          "id": "e16",
+          "from": "sq-analyst",
+          "to": "sq-ui",
+          "label": "切换周期/指标",
+          "kind": "sync",
+          "order": 16
+        }
+      ],
+      "height": 1156
+    },
+    {
+      "key": "er",
+      "layerId": "A",
+      "type": "er",
+      "title": "工作区数据模型",
+      "nodes": [
+        {
+          "id": "er-hypothesis",
+          "type": "entity",
+          "label": "hypothesis",
+          "x": 70,
+          "y": 90,
+          "w": 210,
+          "h": 134,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "id",
+              "type": "text",
+              "key": true
+            },
+            {
+              "name": "thesis",
+              "type": "text"
+            },
+            {
+              "name": "status",
+              "type": "text"
+            },
+            {
+              "name": "artifact_version",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "id": "er-evidence",
+          "type": "entity",
+          "label": "evidence",
+          "x": 350,
+          "y": 90,
+          "w": 210,
+          "h": 134,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "id",
+              "type": "text",
+              "key": true
+            },
+            {
+              "name": "hypothesis_id",
+              "type": "text"
+            },
+            {
+              "name": "source_id",
+              "type": "text"
+            },
+            {
+              "name": "locator",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "id": "er-artifact",
+          "type": "entity",
+          "label": "artifact",
+          "x": 70,
+          "y": 284,
+          "w": 210,
+          "h": 134,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "id",
+              "type": "text",
+              "key": true
+            },
+            {
+              "name": "hypothesis_id",
+              "type": "text"
+            },
+            {
+              "name": "version",
+              "type": "int"
+            },
+            {
+              "name": "git_commit",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "id": "er-file",
+          "type": "entity",
+          "label": "workspace_file",
+          "x": 350,
+          "y": 265,
+          "w": 210,
+          "h": 115,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "path",
+              "type": "text",
+              "key": true
+            },
+            {
+              "name": "kind",
+              "type": "text"
+            },
+            {
+              "name": "hash",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "id": "er-rel-evidence",
+          "type": "relationship",
+          "label": "拥有",
+          "x": 620,
+          "y": 110,
+          "w": 120,
+          "h": 68,
+          "requirementIds": []
+        },
+        {
+          "id": "er-rel-artifact",
+          "type": "relationship",
+          "label": "冻结为",
+          "x": 620,
+          "y": 238,
+          "w": 120,
+          "h": 68,
+          "requirementIds": []
+        },
+        {
+          "id": "er-bar",
+          "type": "entity",
+          "label": "market_bar",
+          "x": 70,
+          "y": 630,
+          "w": 210,
+          "h": 210,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "symbol",
+              "type": "text",
+              "key": true
+            },
+            {
+              "name": "timeframe",
+              "type": "text"
+            },
+            {
+              "name": "ts",
+              "type": "datetime"
+            },
+            {
+              "name": "open",
+              "type": "decimal"
+            },
+            {
+              "name": "high",
+              "type": "decimal"
+            },
+            {
+              "name": "low",
+              "type": "decimal"
+            },
+            {
+              "name": "close",
+              "type": "decimal"
+            },
+            {
+              "name": "volume",
+              "type": "bigint"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "er-hypothesis",
+          "to": "er-rel-evidence",
+          "label": "1",
+          "cardinality": "1..*"
+        },
+        {
+          "id": "e2",
+          "from": "er-rel-evidence",
+          "to": "er-evidence",
+          "label": "N",
+          "cardinality": "1..*"
+        },
+        {
+          "id": "e3",
+          "from": "er-hypothesis",
+          "to": "er-rel-artifact",
+          "label": "1",
+          "cardinality": "1..*"
+        },
+        {
+          "id": "e4",
+          "from": "er-rel-artifact",
+          "to": "er-artifact",
+          "label": "N",
+          "cardinality": "1..*"
+        }
+      ]
+    },
+    {
+      "key": "c4",
+      "layerId": "A",
+      "type": "c4",
+      "title": "C4 上下文/容器",
+      "nodes": [
+        {
+          "id": "c4-analyst",
+          "type": "person",
+          "label": "分析师",
+          "x": 70,
+          "y": 100,
+          "w": 180,
+          "h": 84,
+          "requirementIds": []
+        },
+        {
+          "id": "c4-approver",
+          "type": "person",
+          "label": "审批人",
+          "x": 70,
+          "y": 238,
+          "w": 180,
+          "h": 84,
+          "requirementIds": []
+        },
+        {
+          "id": "c4-workbench",
+          "type": "system",
+          "label": "Fin Agent Workbench",
+          "x": 340,
+          "y": 90,
+          "w": 230,
+          "h": 110,
+          "requirementIds": []
+        },
+        {
+          "id": "c4-ui",
+          "type": "container",
+          "label": "Web Workbench",
+          "technology": "React 18 + TS + DSH Web Shell",
+          "x": 610,
+          "y": 90,
+          "w": 210,
+          "h": 104,
+          "requirementIds": []
+        },
+        {
+          "id": "c4-domain",
+          "type": "container",
+          "label": "Domain API",
+          "technology": "FastAPI + Pydantic v2 + SQLite",
+          "x": 340,
+          "y": 250,
+          "w": 210,
+          "h": 104,
+          "requirementIds": []
+        },
+        {
+          "id": "c4-dsh",
+          "type": "container",
+          "label": "DSH Kernel",
+          "technology": "DeepSeek Harness 0.2.x",
+          "x": 610,
+          "y": 250,
+          "w": 210,
+          "h": 104,
+          "requirementIds": []
+        },
+        {
+          "id": "c4-db",
+          "type": "database",
+          "label": "Hypothesis DB",
+          "technology": "SQLite → Postgres",
+          "x": 340,
+          "y": 370,
+          "w": 170,
+          "h": 84,
+          "requirementIds": []
+        },
+        {
+          "id": "c4-git",
+          "type": "database",
+          "label": "Git Workspace",
+          "technology": "Git + object storage",
+          "x": 570,
+          "y": 370,
+          "w": 170,
+          "h": 84,
+          "requirementIds": []
+        },
+        {
+          "id": "c4-data",
+          "type": "external",
+          "label": "Market Data / Filings",
+          "technology": "OpenBB / AKShare / EDGAR",
+          "x": 880,
+          "y": 100,
+          "w": 176,
+          "h": 72,
+          "requirementIds": []
+        },
+        {
+          "id": "c4-market",
+          "type": "container",
+          "label": "Market Panel",
+          "technology": "ECharts + DuckDB-WASM（候选 klinecharts）",
+          "x": 340,
+          "y": 570,
+          "w": 210,
+          "h": 104,
+          "requirementIds": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "c4-analyst",
+          "to": "c4-workbench",
+          "label": "使用"
+        },
+        {
+          "id": "e2",
+          "from": "c4-approver",
+          "to": "c4-workbench",
+          "label": "审批"
+        },
+        {
+          "id": "e3",
+          "from": "c4-workbench",
+          "to": "c4-ui",
+          "label": "包含"
+        },
+        {
+          "id": "e4",
+          "from": "c4-ui",
+          "to": "c4-domain",
+          "label": "REST"
+        },
+        {
+          "id": "e5",
+          "from": "c4-ui",
+          "to": "c4-dsh",
+          "label": "session"
+        },
+        {
+          "id": "e6",
+          "from": "c4-domain",
+          "to": "c4-db",
+          "label": "读写"
+        },
+        {
+          "id": "e7",
+          "from": "c4-domain",
+          "to": "c4-git",
+          "label": "快照"
+        },
+        {
+          "id": "e8",
+          "from": "c4-dsh",
+          "to": "c4-data",
+          "label": "取数"
+        },
+        {
+          "id": "e9",
+          "from": "c4-workbench",
+          "to": "c4-market",
+          "label": "包含"
+        },
+        {
+          "id": "e10",
+          "from": "c4-market",
+          "to": "c4-data",
+          "label": "查询快照"
+        }
+      ]
+    },
+    {
+      "key": "class",
+      "layerId": "A",
+      "type": "class",
+      "title": "核心类型",
+      "nodes": [
+        {
+          "id": "cls-hypothesis",
+          "type": "class",
+          "label": "Hypothesis",
+          "x": 90,
+          "y": 110,
+          "w": 240,
+          "h": 147,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "id",
+              "type": "string",
+              "key": true
+            },
+            {
+              "name": "thesis",
+              "type": "string"
+            },
+            {
+              "name": "status",
+              "type": "HypothesisStatus"
+            },
+            {
+              "name": "confidence",
+              "type": "number"
+            },
+            {
+              "name": "artifactVersion",
+              "type": "int?"
+            }
+          ]
+        },
+        {
+          "id": "cls-evidence",
+          "type": "class",
+          "label": "EvidenceRef",
+          "x": 400,
+          "y": 110,
+          "w": 240,
+          "h": 109,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "sourceId",
+              "type": "string",
+              "key": true
+            },
+            {
+              "name": "locator",
+              "type": "string?"
+            },
+            {
+              "name": "quote",
+              "type": "string?"
+            }
+          ]
+        },
+        {
+          "id": "cls-artifact",
+          "type": "class",
+          "label": "ArtifactManifest",
+          "x": 710,
+          "y": 110,
+          "w": 240,
+          "h": 128,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "artifactId",
+              "type": "string",
+              "key": true
+            },
+            {
+              "name": "version",
+              "type": "int"
+            },
+            {
+              "name": "gitCommit",
+              "type": "string"
+            },
+            {
+              "name": "sha256",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "id": "cls-file",
+          "type": "class",
+          "label": "WorkspaceFile",
+          "x": 90,
+          "y": 317,
+          "w": 240,
+          "h": 128,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "path",
+              "type": "string",
+              "key": true
+            },
+            {
+              "name": "kind",
+              "type": "string"
+            },
+            {
+              "name": "hash",
+              "type": "string"
+            },
+            {
+              "name": "version",
+              "type": "int"
+            }
+          ]
+        },
+        {
+          "id": "cls-approval",
+          "type": "interface",
+          "label": "ApprovalService",
+          "x": 400,
+          "y": 317,
+          "w": 240,
+          "h": 123,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "approve",
+              "type": "void"
+            },
+            {
+              "name": "reject",
+              "type": "void"
+            },
+            {
+              "name": "events",
+              "type": "TransitionEvent[]"
+            }
+          ]
+        },
+        {
+          "id": "cls-panel",
+          "type": "class",
+          "label": "WorkbenchPanel",
+          "x": 710,
+          "y": 317,
+          "w": 240,
+          "h": 109,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "panelId",
+              "type": "string",
+              "key": true
+            },
+            {
+              "name": "title",
+              "type": "string"
+            },
+            {
+              "name": "width",
+              "type": "number"
+            }
+          ]
+        },
+        {
+          "id": "cls-bar",
+          "type": "class",
+          "label": "Bar",
+          "x": 90,
+          "y": 505,
+          "w": 240,
+          "h": 204,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "symbol",
+              "type": "string",
+              "key": true
+            },
+            {
+              "name": "timeframe",
+              "type": "string"
+            },
+            {
+              "name": "ts",
+              "type": "datetime"
+            },
+            {
+              "name": "open",
+              "type": "number"
+            },
+            {
+              "name": "high",
+              "type": "number"
+            },
+            {
+              "name": "low",
+              "type": "number"
+            },
+            {
+              "name": "close",
+              "type": "number"
+            },
+            {
+              "name": "volume",
+              "type": "number"
+            }
+          ]
+        },
+        {
+          "id": "cls-indicator",
+          "type": "class",
+          "label": "IndicatorSeries",
+          "x": 400,
+          "y": 505,
+          "w": 240,
+          "h": 109,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "name",
+              "type": "string",
+              "key": true
+            },
+            {
+              "name": "params",
+              "type": "object"
+            },
+            {
+              "name": "values",
+              "type": "number[]"
+            }
+          ]
+        },
+        {
+          "id": "cls-layout",
+          "type": "class",
+          "label": "PanelLayout",
+          "x": 710,
+          "y": 505,
+          "w": 240,
+          "h": 147,
+          "requirementIds": [],
+          "fields": [
+            {
+              "name": "mode",
+              "type": "string",
+              "key": true
+            },
+            {
+              "name": "panelId",
+              "type": "string",
+              "key": true
+            },
+            {
+              "name": "visible",
+              "type": "boolean"
+            },
+            {
+              "name": "side",
+              "type": "left|right|bottom"
+            },
+            {
+              "name": "size",
+              "type": "number"
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "cls-hypothesis",
+          "to": "cls-evidence",
+          "label": "has",
+          "kind": "association"
+        },
+        {
+          "id": "e2",
+          "from": "cls-hypothesis",
+          "to": "cls-artifact",
+          "label": "freezes",
+          "kind": "association"
+        },
+        {
+          "id": "e3",
+          "from": "cls-approval",
+          "to": "cls-hypothesis",
+          "label": "transitions",
+          "kind": "dependency"
+        },
+        {
+          "id": "e4",
+          "from": "cls-file",
+          "to": "cls-artifact",
+          "label": "input",
+          "kind": "association"
+        },
+        {
+          "id": "e5",
+          "from": "cls-panel",
+          "to": "cls-file",
+          "label": "shows",
+          "kind": "association"
+        },
+        {
+          "id": "e6",
+          "from": "cls-bar",
+          "to": "cls-indicator",
+          "label": "derives",
+          "kind": "association"
+        },
+        {
+          "id": "e7",
+          "from": "cls-panel",
+          "to": "cls-bar",
+          "label": "renders",
+          "kind": "association"
+        },
+        {
+          "id": "e8",
+          "from": "cls-panel",
+          "to": "cls-layout",
+          "label": "persists",
+          "kind": "association"
+        }
+      ]
+    },
+    {
+      "key": "state",
+      "layerId": "A",
+      "type": "state",
+      "title": "假设状态机",
+      "nodes": [
+        {
+          "id": "st-start",
+          "type": "initial",
+          "label": "开始",
+          "x": 90,
+          "y": 110,
+          "w": 34,
+          "h": 34,
+          "requirementIds": []
+        },
+        {
+          "id": "st-draft",
+          "type": "state",
+          "label": "draft",
+          "x": 90,
+          "y": 1742,
+          "w": 170,
+          "h": 64,
+          "requirementIds": []
+        },
+        {
+          "id": "st-submitted",
+          "type": "state",
+          "label": "submitted",
+          "x": 90,
+          "y": 1838,
+          "w": 170,
+          "h": 64,
+          "requirementIds": []
+        },
+        {
+          "id": "st-review",
+          "type": "state",
+          "label": "under_review",
+          "x": 90,
+          "y": 1934,
+          "w": 170,
+          "h": 64,
+          "requirementIds": []
+        },
+        {
+          "id": "st-approved",
+          "type": "state",
+          "label": "approved",
+          "x": 316,
+          "y": 1742,
+          "w": 170,
+          "h": 64,
+          "requirementIds": []
+        },
+        {
+          "id": "st-rejected",
+          "type": "state",
+          "label": "rejected",
+          "x": 90,
+          "y": 1646,
+          "w": 170,
+          "h": 64,
+          "requirementIds": []
+        },
+        {
+          "id": "st-conditional",
+          "type": "state",
+          "label": "conditional",
+          "x": 316,
+          "y": 1646,
+          "w": 170,
+          "h": 64,
+          "requirementIds": []
+        },
+        {
+          "id": "st-frozen",
+          "type": "state",
+          "label": "frozen",
+          "x": 316,
+          "y": 1838,
+          "w": 170,
+          "h": 64,
+          "requirementIds": []
+        },
+        {
+          "id": "st-end",
+          "type": "final",
+          "label": "结束",
+          "x": 90,
+          "y": 2030,
+          "w": 40,
+          "h": 40,
+          "requirementIds": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "st-start",
+          "to": "st-draft",
+          "label": "创建"
+        },
+        {
+          "id": "e2",
+          "from": "st-draft",
+          "to": "st-submitted",
+          "label": "提交（需可证伪条件）"
+        },
+        {
+          "id": "e3",
+          "from": "st-submitted",
+          "to": "st-review",
+          "label": "进入审核"
+        },
+        {
+          "id": "e4",
+          "from": "st-review",
+          "to": "st-approved",
+          "label": "批准"
+        },
+        {
+          "id": "e5",
+          "from": "st-review",
+          "to": "st-rejected",
+          "label": "驳回"
+        },
+        {
+          "id": "e6",
+          "from": "st-review",
+          "to": "st-conditional",
+          "label": "有条件批准"
+        },
+        {
+          "id": "e7",
+          "from": "st-conditional",
+          "to": "st-approved",
+          "label": "条件满足"
+        },
+        {
+          "id": "e8",
+          "from": "st-rejected",
+          "to": "st-draft",
+          "label": "修订"
+        },
+        {
+          "id": "e9",
+          "from": "st-approved",
+          "to": "st-frozen",
+          "label": "冻结"
+        },
+        {
+          "id": "e10",
+          "from": "st-frozen",
+          "to": "st-end",
+          "label": "归档"
+        }
+      ]
+    },
+    {
+      "key": "flowchart",
+      "layerId": "A",
+      "type": "flowchart",
+      "title": "实施计划",
+      "nodes": [
+        {
+          "id": "fc-start",
+          "type": "start",
+          "label": "开始",
+          "x": 450,
+          "y": 90,
+          "w": 140,
+          "h": 48,
+          "requirementIds": []
+        },
+        {
+          "id": "fc-read",
+          "type": "process",
+          "label": "读取 M0 现状与约束",
+          "x": 436,
+          "y": 226,
+          "w": 168,
+          "h": 84,
+          "verification": "pytest 7/7 + CI 绿 + 架构文档已读",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-scope",
+          "type": "process",
+          "label": "确认 M1/M2 范围与非目标",
+          "x": 436,
+          "y": 398,
+          "w": 168,
+          "h": 84,
+          "verification": "用户确认",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-d1",
+          "type": "decision",
+          "label": "DSH 插件能否承载模式轨 + 主画布 + Dock？",
+          "x": 430,
+          "y": 570,
+          "w": 180,
+          "h": 110,
+          "condition": "client plugin 可全屏挂载、命令/事件可用、Dock 可折叠",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-plugin",
+          "type": "process",
+          "label": "实现 DSH 插件工作台壳",
+          "x": 606,
+          "y": 768,
+          "w": 168,
+          "h": 84,
+          "verification": "本地 DSH 加载 + 截图",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-fork",
+          "type": "process",
+          "label": "fork Web 端并保留插件边界",
+          "x": 266,
+          "y": 768,
+          "w": 168,
+          "h": 84,
+          "verification": "构建通过 + ADR 0003",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-layout",
+          "type": "process",
+          "label": "实现工作台壳：左轨 + 顶栏 + 可折叠 Dock + 专注模式",
+          "x": 436,
+          "y": 940,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-ui",
+          "verification": "1280/1440 截图；折叠/换边/宽度持久化",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-tree",
+          "type": "process",
+          "label": "实现文件树懒加载 + 虚拟滚动",
+          "x": 436,
+          "y": 1112,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-ui",
+          "verification": "1k 文件首屏 <2s",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-preview",
+          "type": "process",
+          "label": "实现 report.json 预览器",
+          "x": 668,
+          "y": 1112,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-ui",
+          "verification": "text/chart/table + iframe sandbox",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-version",
+          "type": "process",
+          "label": "实现 Git 快照与回退条",
+          "x": 900,
+          "y": 1112,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-ui",
+          "verification": "最近 20 版可回退",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-approval",
+          "type": "process",
+          "label": "实现审批队列",
+          "x": 1132,
+          "y": 1112,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-approval",
+          "verification": "draft→frozen 走通",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-audit",
+          "type": "process",
+          "label": "实现审计时间线",
+          "x": 1132,
+          "y": 1284,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-approval",
+          "verification": "5 条事件顺序正确",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-verify",
+          "type": "process",
+          "label": "集成验收与性能基线",
+          "x": 1260.888888888889,
+          "y": 1456,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-verify",
+          "verification": "e2e 全绿 + 模式切换<100ms + 10k K线<1s",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-d2",
+          "type": "decision",
+          "label": "验收是否通过？",
+          "x": 1254.888888888889,
+          "y": 1628,
+          "w": 180,
+          "h": 110,
+          "condition": "四栏可用 + 性能达标 + 审批闭环 + 回退成功",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-rollback",
+          "type": "process",
+          "label": "回滚到 v0.1.0-m0 并记录失败",
+          "x": 1090.888888888889,
+          "y": 1826,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-verify",
+          "verification": "恢复后 e2e 可重跑",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-done",
+          "type": "end",
+          "label": "完成 M1",
+          "x": 1444.888888888889,
+          "y": 1998,
+          "w": 140,
+          "h": 48,
+          "requirementIds": []
+        },
+        {
+          "id": "grp-ui",
+          "type": "group",
+          "label": "四栏 UI（文件边界：apps/workbench/src）",
+          "x": 400,
+          "y": 892,
+          "w": 1632,
+          "h": 512,
+          "collapsed": false,
+          "requirementIds": []
+        },
+        {
+          "id": "grp-approval",
+          "type": "group",
+          "label": "核准（文件边界：features/approval + domain/approval）",
+          "x": 1096,
+          "y": 1064,
+          "w": 1168,
+          "h": 340,
+          "collapsed": false,
+          "requirementIds": []
+        },
+        {
+          "id": "grp-verify",
+          "type": "group",
+          "label": "验证与交付",
+          "x": 1054.888888888889,
+          "y": 1408,
+          "w": 410,
+          "h": 538,
+          "collapsed": false,
+          "requirementIds": []
+        },
+        {
+          "id": "fc-market",
+          "type": "process",
+          "label": "实现行情模式（全宽 K 线）",
+          "x": 1364,
+          "y": 1284,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-ui",
+          "verification": "10k 根 <1s；指标/周期切换；折叠不丢状态",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-router",
+          "type": "process",
+          "label": "实现模式路由与快捷键",
+          "x": 1364,
+          "y": 1112,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-ui",
+          "verification": "1–6 切换 <100ms；刷新恢复现场",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-panel",
+          "type": "process",
+          "label": "实现面板注册与布局持久化",
+          "x": 1596,
+          "y": 1112,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-ui",
+          "verification": "折叠/换边/宽度持久化；重置布局可用",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-research",
+          "type": "process",
+          "label": "实现研究模式",
+          "x": 1596,
+          "y": 1284,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-ui",
+          "verification": "文件树+画布+对话+迷你K线；1280px 可用",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-report",
+          "type": "process",
+          "label": "实现报告模式",
+          "x": 1828,
+          "y": 1284,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-ui",
+          "verification": "块级编辑 + 属性/评论 + 源码 Tab",
+          "requirementIds": []
+        },
+        {
+          "id": "fc-approval-mode",
+          "type": "process",
+          "label": "实现核准模式",
+          "x": 2060,
+          "y": 1284,
+          "w": 168,
+          "h": 84,
+          "parentGroup": "grp-approval",
+          "verification": "队列→详情→审批→审计时间线",
+          "requirementIds": []
+        }
+      ],
+      "edges": [
+        {
+          "id": "e1",
+          "from": "fc-start",
+          "to": "fc-read",
+          "label": "启动",
+          "kind": "flow"
+        },
+        {
+          "id": "e2",
+          "from": "fc-read",
+          "to": "fc-scope",
+          "label": "有基线",
+          "kind": "flow"
+        },
+        {
+          "id": "e3",
+          "from": "fc-scope",
+          "to": "fc-d1",
+          "label": "范围确认",
+          "kind": "flow"
+        },
+        {
+          "id": "e4",
+          "from": "fc-d1",
+          "to": "fc-plugin",
+          "label": "yes",
+          "kind": "flow"
+        },
+        {
+          "id": "e5",
+          "from": "fc-d1",
+          "to": "fc-fork",
+          "label": "no",
+          "kind": "flow"
+        },
+        {
+          "id": "e6",
+          "from": "fc-plugin",
+          "to": "fc-layout",
+          "label": "壳就绪",
+          "kind": "flow"
+        },
+        {
+          "id": "e7",
+          "from": "fc-fork",
+          "to": "fc-layout",
+          "label": "壳就绪",
+          "kind": "flow"
+        },
+        {
+          "id": "e8",
+          "from": "fc-layout",
+          "to": "fc-tree",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e9",
+          "from": "fc-layout",
+          "to": "fc-preview",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e10",
+          "from": "fc-layout",
+          "to": "fc-version",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e11",
+          "from": "fc-layout",
+          "to": "fc-approval",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e12",
+          "from": "fc-approval",
+          "to": "fc-audit",
+          "label": "队列就绪",
+          "kind": "flow"
+        },
+        {
+          "id": "e13",
+          "from": "fc-tree",
+          "to": "fc-verify",
+          "label": "可验收",
+          "kind": "flow"
+        },
+        {
+          "id": "e14",
+          "from": "fc-preview",
+          "to": "fc-verify",
+          "label": "可验收",
+          "kind": "flow"
+        },
+        {
+          "id": "e15",
+          "from": "fc-version",
+          "to": "fc-verify",
+          "label": "可验收",
+          "kind": "flow"
+        },
+        {
+          "id": "e16",
+          "from": "fc-audit",
+          "to": "fc-verify",
+          "label": "可验收",
+          "kind": "flow"
+        },
+        {
+          "id": "e17",
+          "from": "fc-verify",
+          "to": "fc-d2",
+          "label": "跑 e2e",
+          "kind": "flow"
+        },
+        {
+          "id": "e18",
+          "from": "fc-d2",
+          "to": "fc-done",
+          "label": "yes",
+          "kind": "flow"
+        },
+        {
+          "id": "e19",
+          "from": "fc-d2",
+          "to": "fc-rollback",
+          "label": "no",
+          "kind": "flow"
+        },
+        {
+          "id": "e20",
+          "from": "fc-rollback",
+          "to": "fc-verify",
+          "label": "修复后重跑",
+          "kind": "flow"
+        },
+        {
+          "id": "e21",
+          "from": "fc-layout",
+          "to": "fc-market",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e22",
+          "from": "fc-market",
+          "to": "fc-verify",
+          "label": "可验收",
+          "kind": "flow"
+        },
+        {
+          "id": "e23",
+          "from": "fc-layout",
+          "to": "fc-router",
+          "label": "壳就绪",
+          "kind": "flow"
+        },
+        {
+          "id": "e24",
+          "from": "fc-layout",
+          "to": "fc-panel",
+          "label": "壳就绪",
+          "kind": "flow"
+        },
+        {
+          "id": "e25",
+          "from": "fc-router",
+          "to": "fc-research",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e26",
+          "from": "fc-panel",
+          "to": "fc-research",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e27",
+          "from": "fc-router",
+          "to": "fc-market",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e28",
+          "from": "fc-panel",
+          "to": "fc-market",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e29",
+          "from": "fc-router",
+          "to": "fc-report",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e30",
+          "from": "fc-panel",
+          "to": "fc-report",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e31",
+          "from": "fc-router",
+          "to": "fc-approval-mode",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e32",
+          "from": "fc-panel",
+          "to": "fc-approval-mode",
+          "label": "并行",
+          "kind": "flow"
+        },
+        {
+          "id": "e33",
+          "from": "fc-research",
+          "to": "fc-verify",
+          "label": "可验收",
+          "kind": "flow"
+        },
+        {
+          "id": "e34",
+          "from": "fc-market",
+          "to": "fc-verify",
+          "label": "可验收",
+          "kind": "flow"
+        },
+        {
+          "id": "e35",
+          "from": "fc-report",
+          "to": "fc-verify",
+          "label": "可验收",
+          "kind": "flow"
+        },
+        {
+          "id": "e36",
+          "from": "fc-approval-mode",
+          "to": "fc-verify",
+          "label": "可验收",
+          "kind": "flow"
+        }
+      ]
+    }
+  ],
+  "modules": [
+    {
+      "id": "m1-workbench",
+      "name": "M1/M2 工作台总控",
+      "summary": "统筹工作台壳、模式切换与假设核准闭环：范围、依赖、验收与跨模块接口；不直接写业务代码。",
+      "layerId": "A",
+      "code": "A1",
+      "parentId": null,
+      "dependsOn": [],
+      "nodeIds": [
+        "module:mod-a1",
+        "usecase:uc-modes"
+      ],
+      "files": [
+        "apps/workbench/**",
+        "docs/roadmap.md"
+      ],
+      "acceptance": [
+        "六模式工作台在 1280px 可用",
+        "M1/M2 验收清单完成"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "dsh-spike",
+      "name": "DSH 承载能力 spike",
+      "summary": "3 天验证 client plugin 能否全屏承载模式轨 + 主画布 + Dock；产出可运行 demo 与 ADR 0003（插件 vs fork）。",
+      "layerId": "B",
+      "code": "B1",
+      "parentId": "m1-workbench",
+      "dependsOn": [],
+      "nodeIds": [
+        "module:mod-b1"
+      ],
+      "files": [
+        "spikes/dsh-workbench/**",
+        "docs/adr/0003-dsh-plugin-vs-fork.md"
+      ],
+      "acceptance": [
+        "spike 结论明确：插件或 fork",
+        "demo 可加载或 fork 构建通过"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "layout-shell",
+      "name": "工作台壳（左轨 + 顶栏 + Dock）",
+      "summary": "56px 模式轨、顶栏（标的/as-of/搜索/助手/布局/导出）、可折叠 Dock、状态栏、Focus 模式；不含具体模式内容。",
+      "layerId": "B",
+      "code": "B2",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "dsh-spike"
+      ],
+      "nodeIds": [
+        "module:mod-b2",
+        "usecase:uc-workbench"
+      ],
+      "files": [
+        "apps/workbench/src/shell/**",
+        "apps/workbench/src/styles/tokens.css"
+      ],
+      "acceptance": [
+        "模式轨/顶栏/状态栏可用",
+        "Dock 折叠/换边/宽度持久化",
+        "Focus 模式隐藏 Dock"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "mode-router",
+      "name": "模式路由与快捷键",
+      "summary": "注册研究/行情/文件/报告/核准/看板六个模式；hash 路由、1–6 快捷键、懒加载与状态保留。",
+      "layerId": "B",
+      "code": "B7",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "layout-shell"
+      ],
+      "nodeIds": [
+        "module:mod-b7"
+      ],
+      "files": [
+        "apps/workbench/src/modes/registry.ts",
+        "apps/workbench/src/router/**"
+      ],
+      "acceptance": [
+        "模式切换 <100ms",
+        "刷新恢复现场",
+        "切回保留滚动/选中"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "panel-registry",
+      "name": "面板注册与布局持久化",
+      "summary": "PanelDefinition + layoutStore + react-resizable-panels；按 workspace+mode 持久化宽度、折叠、顺序与换边。",
+      "layerId": "B",
+      "code": "B8",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "layout-shell"
+      ],
+      "nodeIds": [
+        "module:mod-b8",
+        "class:cls-layout"
+      ],
+      "files": [
+        "apps/workbench/src/layout/**",
+        "apps/workbench/src/state/layoutStore.ts"
+      ],
+      "acceptance": [
+        "面板注册/折叠/换边",
+        "布局持久化",
+        "重置布局可用"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "file-tree",
+      "name": "文件树面板",
+      "summary": "三根分区 + 单层查询 + 虚拟滚动 + 面包屑 + 搜索；作为研究/文件模式的可折叠面板。",
+      "layerId": "B",
+      "code": "B3",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "layout-shell"
+      ],
+      "nodeIds": [
+        "module:mod-b3",
+        "usecase:uc-files"
+      ],
+      "files": [
+        "apps/workbench/src/features/file-tree/**",
+        "services/domain/app/workspace.py",
+        "packages/contracts/workspace.schema.json"
+      ],
+      "acceptance": [
+        "1k 文件首屏 <2s",
+        "三根分区与版本徽标",
+        "搜索/面包屑可用"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "preview",
+      "name": "报告画布",
+      "summary": "iframe sandbox + report.json 渲染 text/chart/table 块；块级选中与 comment 锚点，禁用父页面访问。",
+      "layerId": "B",
+      "code": "B4",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "layout-shell",
+        "file-tree"
+      ],
+      "nodeIds": [
+        "module:mod-b4",
+        "usecase:uc-preview"
+      ],
+      "files": [
+        "apps/workbench/src/features/preview/**",
+        "packages/contracts/report.schema.json"
+      ],
+      "acceptance": [
+        "三种块正确渲染",
+        "iframe 无法访问父页面",
+        "块级选中可用"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "versions",
+      "name": "Git 快照与回退面板",
+      "summary": "每个 agent turn 结束 commit；面板显示最近 20 个版本、diff 摘要与一键回退（开新分支）。",
+      "layerId": "B",
+      "code": "B5",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "layout-shell"
+      ],
+      "nodeIds": [
+        "module:mod-b5",
+        "usecase:uc-version"
+      ],
+      "files": [
+        "apps/workbench/src/features/versions/**",
+        "services/domain/app/versions.py"
+      ],
+      "acceptance": [
+        "最近 20 版可见",
+        "回退后 e2e 可重跑",
+        "不 hard reset"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "market-panel",
+      "name": "行情模式（全宽 K 线）",
+      "summary": "独立行情模式：自选/搜索 + 全宽 K 线 + 标的详情；K线、成交量、MA/MACD/RSI、周期切换、十字光标；数据走行情服务快照。",
+      "layerId": "B",
+      "code": "B6",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "mode-router",
+        "panel-registry"
+      ],
+      "nodeIds": [
+        "module:mod-b6",
+        "usecase:uc-market"
+      ],
+      "files": [
+        "apps/workbench/src/modes/market/**",
+        "services/domain/app/market.py",
+        "packages/contracts/market.schema.json"
+      ],
+      "acceptance": [
+        "K线+成交量+MA/MACD/RSI",
+        "10k 根 <1s，缩放平移 60fps",
+        "折叠/切模式不丢状态"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "research-mode",
+      "name": "研究模式",
+      "summary": "文件树 + 报告画布 + 假设检查器 + 左侧对话 Dock + 底部迷你 K 线；专注模式可全屏画布。",
+      "layerId": "B",
+      "code": "B9",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "mode-router",
+        "panel-registry",
+        "file-tree",
+        "preview"
+      ],
+      "nodeIds": [
+        "module:mod-b9"
+      ],
+      "files": [
+        "apps/workbench/src/modes/research/**"
+      ],
+      "acceptance": [
+        "1280px 三栏可用",
+        "对话 Dock 可折叠",
+        "迷你K线可展开到行情模式"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "report-mode",
+      "name": "报告模式",
+      "summary": "大纲 + 块级预览/编辑 + 属性/评论；源码为高级 Tab；导出入口。",
+      "layerId": "B",
+      "code": "B10",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "mode-router",
+        "panel-registry",
+        "preview"
+      ],
+      "nodeIds": [
+        "module:mod-b10"
+      ],
+      "files": [
+        "apps/workbench/src/modes/report/**"
+      ],
+      "acceptance": [
+        "块级编辑",
+        "属性/评论",
+        "源码 Tab"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "approval-mode",
+      "name": "核准模式",
+      "summary": "队列 + 假设详情 + 审计时间线；批准/修改后批准/驳回操作栏。",
+      "layerId": "B",
+      "code": "B11",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "mode-router",
+        "panel-registry",
+        "approval-queue"
+      ],
+      "nodeIds": [
+        "module:mod-b11",
+        "usecase:uc-approve"
+      ],
+      "files": [
+        "apps/workbench/src/modes/approval/**"
+      ],
+      "acceptance": [
+        "队列→详情→审批",
+        "审计时间线",
+        "驳回原因码"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "approval-queue",
+      "name": "假设核准队列",
+      "summary": "待审卡片展示证据正/反、可证伪条件、估值影响与置信度；支持批准/修改后批准/驳回。",
+      "layerId": "C",
+      "code": "C1",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "layout-shell"
+      ],
+      "nodeIds": [
+        "module:mod-c1",
+        "usecase:uc-approve"
+      ],
+      "files": [
+        "apps/workbench/src/features/approval/**",
+        "services/domain/app/approval.py"
+      ],
+      "acceptance": [
+        "队列可筛选 under_review",
+        "三种审批动作可用",
+        "驳回带原因码"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "approval-flow",
+      "name": "状态机与审计时间线",
+      "summary": "复用领域服务状态机；UI 展示 draft→frozen 全链路事件、操作者与依据；批准后冻结 artifact 版本。",
+      "layerId": "C",
+      "code": "C2",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "approval-queue"
+      ],
+      "nodeIds": [
+        "module:mod-c2",
+        "state:st-review"
+      ],
+      "files": [
+        "apps/workbench/src/features/approval/state/**",
+        "services/domain/app/approval.py"
+      ],
+      "acceptance": [
+        "draft→frozen 走通",
+        "审计事件 5 条且顺序正确",
+        "批准冻结版本"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "e2e-verify",
+      "name": "端到端验收与性能基线",
+      "summary": "覆盖模式切换、壳、研究/行情/报告/核准、文件树、预览、回退的 e2e；记录 1k 文件与 10k K 线性能基线。",
+      "layerId": "D",
+      "code": "D1",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "layout-shell",
+        "mode-router",
+        "panel-registry",
+        "file-tree",
+        "preview",
+        "versions",
+        "market-panel",
+        "research-mode",
+        "report-mode",
+        "approval-mode",
+        "approval-queue",
+        "approval-flow"
+      ],
+      "nodeIds": [
+        "module:mod-d1",
+        "flowchart:fc-verify"
+      ],
+      "files": [
+        "tests/e2e/**",
+        "docs/acceptance/m1.md"
+      ],
+      "acceptance": [
+        "e2e 全绿",
+        "模式切换<100ms",
+        "性能/安全基线记录",
+        "失败可回滚到 v0.1.0-m0"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    },
+    {
+      "id": "ci-build",
+      "name": "CI/构建/文档",
+      "summary": "扩展 CI 覆盖前端构建与 e2e；更新 README、ADR 与验收文档。",
+      "layerId": "D",
+      "code": "D2",
+      "parentId": "m1-workbench",
+      "dependsOn": [
+        "layout-shell",
+        "mode-router"
+      ],
+      "nodeIds": [
+        "module:mod-d2"
+      ],
+      "files": [
+        ".github/workflows/**",
+        "apps/workbench/package.json",
+        "docs/**"
+      ],
+      "acceptance": [
+        "CI 构建 + 测试全绿",
+        "README/ADR 更新"
+      ],
+      "status": "pending",
+      "verification": {
+        "tests": {
+          "status": "pending",
+          "evidence": []
+        },
+        "reviewer": {
+          "status": "pending",
+          "evidence": []
+        },
+        "human": {
+          "status": "pending",
+          "evidence": []
+        }
+      }
+    }
+  ]
+}

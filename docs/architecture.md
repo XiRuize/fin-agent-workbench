@@ -9,7 +9,7 @@
 - 一个以 DSH 为唯一 agent kernel 的金融研究工作台。
 - 研究过程可追溯：每个数字有来源/计算 ID，每条假设有证据与审批记录。
 - 报告可交付、可回退：HTML/PDF/PPTX/DOCX，版本与产物哈希可查。
-- 人机协同：四栏界面里完成对话、核准、文件管理与预览修改。
+- 人机协同：模式化工作台里完成对话、核准、文件管理与预览修改。
 
 **非目标（当前阶段）**
 
@@ -21,7 +21,7 @@
 
 ```text
 ┌──────────────────────────────────────────────────────────────────┐
-│ L2 体验层   DSH Web Shell + 四栏工作台（React 插件 / fork）        │
+│ L2 体验层   DSH Web Shell + 模式化工作台（左轨 / 画布 / Dock）      │
 │             对话 │ 假设核准 │ 文件树 │ 预览与修改                  │
 ├──────────────────────────────────────────────────────────────────┤
 │ L1 领域层   FastAPI：假设 / 证据 / 数据 / 计算 / 渲染 / 导出       │
@@ -53,14 +53,16 @@
 
 ### L2：体验层
 
-四栏固定布局，React + `react-resizable-panels`：
+「左轨 + 单主画布 + 可折叠 Dock」，React + `react-resizable-panels`：
 
-| 栏位 | 职责 | 数据源 |
+| 区域 | 职责 | 数据源 |
 |---|---|---|
-| 左一 对话 | 研究请求、工具轨迹、引用跳转 | DSH session |
-| 左二 假设核准 | 待审队列、证据正/反、批准/驳回 | Hypothesis/Approval |
-| 左三 文件树 | `sources/`、`analysis/`、`deliverables/` | Workspace API |
-| 左四 预览/修改 | HTML/PPTX 预览、块级编辑、diff、评论 | Artifact |
+| 模式轨 | 研究 / 行情 / 文件 / 报告 / 核准 / 看板 | 路由 + layout store |
+| 主画布 | 当前模式的报告、K 线、审批详情或文件预览 | 各模式模块 |
+| 左 Dock | 对话、文件树 | DSH session / Workspace API |
+| 右 Dock | 假设证据、属性、审计时间线 | Hypothesis/Approval/Artifact |
+
+详见 [design/ui-shell.md](design/ui-shell.md) 与 [ADR 0004](adr/0004-workbench-shell-over-four-panes.md)。
 
 ## 3. 关键流程
 
@@ -126,7 +128,7 @@ dossier.json + brand.json
 
 ## 6. 待决问题
 
-1. DSH 客户端插件能否承载四栏，还是必须 fork Web 端？
+1. DSH 客户端插件能否承载「模式轨 + 主画布 + Dock」，还是必须 fork Web 端？
 2. 多租户 SaaS 还是单机/团队私有部署？
 3. 报告以 HTML 为源，还是以结构化块为源？（当前倾向：块为源，HTML 为渲染产物）
 4. 审批持久化用 Postgres 状态机，还是 P1 引入 Temporal？
